@@ -87,7 +87,28 @@
       width: min(46vw, 700px);
       z-index: 2;
     }
-    .logo-boven img { width: 100%; height: auto; display: block; }
+    .logo-boven { display: grid; }
+    .logo-boven img {
+      grid-area: 1 / 1;
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: opacity var(--fade) ease;
+    }
+    .logo-boven .wit { opacity: 0; }
+    .logo-boven .wit.omkeren { filter: brightness(0) invert(1); }  /* logo zonder witte versie */
+    .hero.donker .logo-boven .zwart { opacity: 0; }
+    .hero.donker .logo-boven .wit   { opacity: 1; }
+
+    /* Zwarte band met fade aan de bovenkant: zet data-band op een slide */
+    .slide[data-band]::after {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: clamp(240px, 48%, 460px);
+      background: linear-gradient(to bottom, #000 0%, #000 45%, rgba(0,0,0,0) 100%);
+      pointer-events: none;
+    }
 
     /* ---------- VERSIE + LOGO TESTEN ---------- */
     .versie,
@@ -140,7 +161,7 @@
       text-align: center;
     }
     .intro p {
-      font-size: clamp(20px, 2.5vw, 37px);
+      font-size: clamp(17px, 1.7vw, 25px);
       line-height: 1.5;
       letter-spacing: -.005em;
     }
@@ -158,7 +179,7 @@
       margin-top: clamp(32px, 4vw, 56px);
       color: var(--wit);
       text-decoration: none;
-      font-size: clamp(20px, 2.5vw, 37px);
+      font-size: clamp(17px, 1.7vw, 25px);
     }
     .mail:hover { text-decoration: underline; text-underline-offset: .15em; }
 
@@ -186,6 +207,8 @@
         data-zoom="in"   -> langzaam inzoomen
         data-zoom="uit"  -> langzaam uitzoomen
         (weglaten)       -> foto staat stil
+        data-band        -> zwarte band met fade aan de bovenkant
+        data-logo="wit"  -> wit logo bij deze foto
     - Het bijschrift staat in .bijschrift binnen de slide.
     Nieuwe foto toevoegen: kopieer een <figure class="slide"> en pas de gegevens aan.
   -->
@@ -201,13 +224,13 @@
       <figcaption class="bijschrift">Versace, Groninger Museum</figcaption>
     </figure>
 
-    <figure class="slide" data-zoom="in">
+    <figure class="slide" data-zoom="in" data-band data-logo="wit">
       <img src="forum-tattoo.jpg" alt="Tentoonstelling Tattoo in Forum Groningen" loading="lazy">
       <figcaption class="bijschrift">Tattoo, Forum Groningen</figcaption>
     </figure>
 
     <!-- Versienummer: bij elke update ophogen -->
-    <span class="versie">v1.1</span>
+    <span class="versie">v1.2</span>
 
     <!-- Logo testen: de knop wisselt het logo bovenaan; de lijst met logo's staat onderaan in het script -->
     <div class="logo-knop">
@@ -215,7 +238,8 @@
     </div>
 
     <h1 class="logo-boven">
-      <img src="logo-zwart.svg" alt="Rudo + Jenny">
+      <img class="zwart" src="logo-zwart.svg" alt="Rudo + Jenny">
+      <img class="wit" src="logo-wit.svg" alt="" aria-hidden="true">
     </h1>
 
     <p class="tagline">Tentoonstellingen vanuit<br>inhoud en ontwerp</p>
@@ -246,6 +270,7 @@
 
       let huidig = slides.findIndex(s => s.classList.contains('actief'));
       if (huidig < 0) { huidig = 0; slides[0].classList.add('actief'); }
+      hero.classList.toggle('donker', slides[huidig].dataset.logo === 'wit');
 
       function volgende() {
         const oud = slides[huidig];
@@ -257,6 +282,8 @@
         img.style.animation = 'none';
         void img.offsetWidth;
         img.style.animation = '';
+
+        hero.classList.toggle('donker', nieuw.dataset.logo === 'wit');
 
         slides.forEach(s => s.classList.remove('vorig'));
         nieuw.classList.add('actief');
@@ -276,32 +303,40 @@
 
   <script>
     // Logo testen: elke klik op de knop toont het volgende logo uit deze lijst.
-    // Nieuw logo? Zet het bestand in de map en voeg de naam hier toe.
+    // Nieuw logo? Zet het bestand in de map en voeg het hier toe.
+    // "wit" is de witte versie voor donkere foto's; zonder "wit" wordt het zwarte logo wit gemaakt.
     const LOGOS = [
-      'logo-zwart.svg',
-      'logo2.svg',
+      { zwart: 'logo-zwart.svg', wit: 'logo-wit.svg' },
+      { zwart: 'logo2.svg' },
     ];
 
     (function () {
-      const img = document.querySelector('.logo-boven img');
+      const zwart = document.querySelector('.logo-boven .zwart');
+      const wit = document.querySelector('.logo-boven .wit');
       const knop = document.getElementById('logo-wissel');
       const sleutel = 'testlogo';
       let nr = 0;
 
       function toon(i) {
         nr = (i + LOGOS.length) % LOGOS.length;
-        img.src = LOGOS[nr];
+        const logo = LOGOS[nr];
+        zwart.src = logo.zwart;
+        wit.src = logo.wit || logo.zwart;
+        wit.classList.toggle('omkeren', !logo.wit);
         knop.textContent = 'Logo ' + (nr + 1) + '/' + LOGOS.length;
       }
 
       // laatst gekozen logo onthouden in deze browser
       let opgeslagen = 0;
-      try { opgeslagen = Math.max(0, LOGOS.indexOf(localStorage.getItem(sleutel))); } catch (e) {}
+      try {
+        const naam = localStorage.getItem(sleutel);
+        opgeslagen = Math.max(0, LOGOS.findIndex(l => l.zwart === naam));
+      } catch (e) {}
       toon(opgeslagen);
 
       knop.addEventListener('click', () => {
         toon(nr + 1);
-        try { localStorage.setItem(sleutel, LOGOS[nr]); } catch (e) {}
+        try { localStorage.setItem(sleutel, LOGOS[nr].zwart); } catch (e) {}
       });
     })();
   </script>
