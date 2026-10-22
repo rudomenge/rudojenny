@@ -116,9 +116,14 @@
       pointer-events: none;
     }
 
-    /* ---------- VERSIE + LOGO TESTEN ---------- */
+    /* Schuif-overgangen: foto's liggen klaar, JS laat ze bewegen */
+    .hero:not([data-overgang="fade"]) .slide { transition: none; }
+    .hero:not([data-overgang="fade"]) .slide.vorig { opacity: 1; z-index: 1; }
+    .hero:not([data-overgang="fade"]) .slide.actief { z-index: 2; }
+
+    /* ---------- VERSIE + TESTKNOPPEN ---------- */
     .versie,
-    .logo-knop {
+    .knoppen {
       position: absolute;
       top: 12px;
       z-index: 3;
@@ -128,12 +133,14 @@
       text-shadow: 0 0 8px rgba(0,0,0,.35);
     }
     .versie { left: 16px; opacity: .7; }
-    .logo-knop {
+    .knoppen {
       right: 16px;
       display: flex;
+      flex-direction: column;
+      align-items: flex-end;
       gap: 6px;
     }
-    .logo-knop button {
+    .knoppen button {
       font: inherit;
       color: inherit;
       background: rgba(0,0,0,.35);
@@ -142,7 +149,7 @@
       padding: 5px 12px;
       cursor: pointer;
     }
-    .logo-knop button:hover { background: rgba(0,0,0,.6); }
+    .knoppen button:hover { background: rgba(0,0,0,.6); }
 
     .tagline {
       position: absolute;
@@ -191,7 +198,7 @@
 
     /* Logo's iets groter op telefoon */
     @media (max-width: 700px) {
-      .logo-boven { width: 84vw; }
+      .logo-boven { width: 84vw; top: 84px; }  /* ruimte voor de testknoppen */
       .logo-onder { width: 55vw; }
       /* bijschrift rechtsonder, onder de tagline */
       .bijschrift { left: auto; right: 16px; bottom: 16px; text-align: right; }
@@ -218,7 +225,7 @@
     - Het bijschrift staat in .bijschrift binnen de slide.
     Nieuwe foto toevoegen: kopieer een <figure class="slide"> en pas de gegevens aan.
   -->
-  <header class="hero" data-interval="7000">
+  <header class="hero" data-interval="7000" data-overgang="fade">
 
     <figure class="slide actief" data-zoom="in">
       <img src="gm-jr.jpg" alt="Tentoonstelling JR: Chronicles in het Groninger Museum">
@@ -236,11 +243,14 @@
     </figure>
 
     <!-- Versienummer: bij elke update ophogen -->
-    <span class="versie">v1.4</span>
+    <span class="versie">v1.5</span>
 
-    <!-- Logo testen: de knop wisselt het logo bovenaan; de lijst met logo's staat onderaan in het script -->
-    <div class="logo-knop">
+    <!-- Testknoppen:
+         - Logo: wisselt het logo bovenaan; de lijst met logo's staat onderaan in het script
+         - Slideshow: wisselt de overgang tussen de foto's en toont die meteen -->
+    <div class="knoppen">
       <button type="button" id="logo-wissel">Logo 1/1</button>
+      <button type="button" id="overgang-wissel">Slideshow 1/1</button>
     </div>
 
     <h1 class="logo-boven">
@@ -278,6 +288,38 @@
       if (huidig < 0) { huidig = 0; slides[0].classList.add('actief'); }
       hero.classList.toggle('donker', slides[huidig].dataset.logo === 'wit');
 
+      // Overgangen tussen de foto's (knop "Slideshow" rechtsboven).
+      // Alle schuif-varianten bewegen van links naar rechts.
+      const OVERGANGEN = [
+        { id: 'fade',     naam: 'Fade' },
+        { id: 'over',     naam: 'Schuif over' },  // nieuwe foto schuift over de oude heen
+        { id: 'push',     naam: 'Wegduwen' },     // nieuwe foto duwt de oude weg
+        { id: 'parallax', naam: 'Parallax' },     // oude schuift langzaam mee en wordt donker
+        { id: 'onthul',   naam: 'Onthullen' },    // oude schuift weg, nieuwe ligt eronder
+      ];
+      const schuif = { duration: 1300, easing: 'cubic-bezier(.65, 0, .35, 1)' };
+      const rustig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function beweeg(oud, nieuw) {
+        const soort = hero.dataset.overgang;
+        if (soort === 'fade' || rustig) return;
+        const links = 'translateX(-100%)', midden = 'translateX(0)', rechts = 'translateX(100%)';
+
+        if (soort === 'over') {
+          nieuw.animate({ transform: [links, midden] }, schuif);
+        } else if (soort === 'push') {
+          nieuw.animate({ transform: [links, midden] }, schuif);
+          oud.animate({ transform: [midden, rechts] }, schuif);
+        } else if (soort === 'parallax') {
+          nieuw.animate({ transform: [links, midden] }, schuif);
+          oud.animate({ transform: [midden, 'translateX(30%)'], filter: ['brightness(1)', 'brightness(.4)'] }, schuif);
+        } else if (soort === 'onthul') {
+          oud.style.zIndex = 3;   // oude foto ligt bovenop tot hij weg is
+          oud.animate({ transform: [midden, rechts] }, schuif)
+             .finished.then(() => { oud.style.zIndex = ''; });
+        }
+      }
+
       function volgende() {
         const oud = slides[huidig];
         huidig = (huidig + 1) % slides.length;
@@ -294,7 +336,8 @@
         slides.forEach(s => s.classList.remove('vorig'));
         nieuw.classList.add('actief');
         oud.classList.remove('actief');
-        oud.classList.add('vorig');   // blijft doorzoomen tijdens het wegfaden
+        oud.classList.add('vorig');   // blijft doorzoomen tijdens de overgang
+        beweeg(oud, nieuw);
       }
 
       let timer = setInterval(volgende, interval);
@@ -303,6 +346,26 @@
       document.addEventListener('visibilitychange', () => {
         clearInterval(timer);
         if (!document.hidden) timer = setInterval(volgende, interval);
+      });
+
+      // Slideshow-knop: volgende overgang kiezen, onthouden en meteen laten zien
+      const knop = document.getElementById('overgang-wissel');
+      let nr = 0;
+      function kies(i) {
+        nr = (i + OVERGANGEN.length) % OVERGANGEN.length;
+        hero.dataset.overgang = OVERGANGEN[nr].id;
+        knop.textContent = 'Slideshow ' + (nr + 1) + '/' + OVERGANGEN.length + ': ' + OVERGANGEN[nr].naam;
+      }
+      try {
+        kies(Math.max(0, OVERGANGEN.findIndex(o => o.id === localStorage.getItem('overgang'))));
+      } catch (e) { kies(0); }
+
+      knop.addEventListener('click', () => {
+        kies(nr + 1);
+        try { localStorage.setItem('overgang', OVERGANGEN[nr].id); } catch (e) {}
+        clearInterval(timer);
+        volgende();
+        timer = setInterval(volgende, interval);
       });
     })();
   </script>
