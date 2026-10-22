@@ -245,6 +245,7 @@
       align-items: center;
     }
     .about-foto {
+      position: relative;
       aspect-ratio: 4 / 5;
       background: #1a1a1a;
       overflow: hidden;
@@ -254,6 +255,19 @@
       font-size: 14px;
     }
     .about-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    /* Foto testen: klik op de foto voor de volgende */
+    .about-foto[data-fotos] { cursor: pointer; }
+    .foto-teller {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      font-size: 11px;
+      letter-spacing: .04em;
+      color: var(--wit);
+      background: rgba(0,0,0,.45);
+      padding: 4px 9px;
+      border-radius: 999px;
+    }
     .about-tekst h2 {
       font-family: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
       font-weight: 800;
@@ -367,7 +381,7 @@
     </figure>
 
     <!-- Versienummer: bij elke update ophogen -->
-    <span class="versie">v2.3</span>
+    <span class="versie">v2.4</span>
 
     <!-- Kop: contact, logo (als code, zodat het kruisje kan draaien) en about -->
     <nav class="kop">
@@ -437,15 +451,17 @@
 
   <!--
     ABOUT-VLAK: gaat open als je op "about" klikt.
-    - Foto: zet een bestand "over-ons.jpg" in de map (staand werkt het mooist, ongeveer 4:5).
+    - Foto's: klik op de foto om door de lijst in data-fotos te bladeren (om te kiezen welke het best werkt).
+      Staande foto's werken het mooist (ongeveer 4:5); andere formaten worden bijgesneden.
     - Tekst: vervang de kop en de alinea's hieronder.
   -->
   <section class="about-vlak" id="over-ons" aria-label="Over ons">
     <div class="about-binnen">
       <div class="about-inhoud">
         <button class="about-sluit" type="button" aria-label="Sluiten">×</button>
-        <div class="about-foto schuif">
-          <img src="over-ons.jpg" alt="Rudo Menge en Jenny Kloostra" onerror="this.replaceWith('foto volgt')">
+        <div class="about-foto schuif" data-fotos="portret1.jpg portret2.jpg portret3.jpg portret4.jpg portret5.jpg">
+          <img src="portret1.jpg" alt="Rudo Menge en Jenny Kloostra">
+          <span class="foto-teller">1/5</span>
         </div>
         <div class="about-tekst schuif">
           <h2>Over ons</h2>
@@ -605,6 +621,20 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     })();
+
+    // About-foto: elke klik toont de volgende foto uit data-fotos
+    document.querySelectorAll('.about-foto[data-fotos]').forEach(vak => {
+      const fotos = vak.dataset.fotos.trim().split(/\s+/);
+      const img = vak.querySelector('img');
+      const teller = vak.querySelector('.foto-teller');
+      let nr = 0;
+      fotos.forEach(f => { new Image().src = f; });   // alvast laden, dan wisselt hij direct
+      vak.addEventListener('click', () => {
+        nr = (nr + 1) % fotos.length;
+        img.src = fotos[nr];
+        teller.textContent = (nr + 1) + '/' + fotos.length;
+      });
+    });
 
     // Kruisje in het logo draait zolang de muis op het logo staat en maakt de draai daarna netjes af
     document.querySelectorAll('.logo5 .kruis').forEach(kruis => {
