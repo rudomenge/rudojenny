@@ -116,7 +116,6 @@
       cursor: pointer;
     }
     .logo-knop button:hover { background: rgba(0,0,0,.6); }
-    .logo-knop [hidden] { display: none; }
 
     .tagline {
       position: absolute;
@@ -208,13 +207,11 @@
     </figure>
 
     <!-- Versienummer: bij elke update ophogen -->
-    <span class="versie">v1.0</span>
+    <span class="versie">v1.1</span>
 
-    <!-- Logo testen: kies een SVG/PNG/JPG, die vervangt het logo bovenaan (alleen in je eigen browser) -->
+    <!-- Logo testen: de knop wisselt het logo bovenaan; de lijst met logo's staat onderaan in het script -->
     <div class="logo-knop">
-      <button type="button" id="logo-kies">Logo wijzigen</button>
-      <button type="button" id="logo-reset" hidden>Origineel</button>
-      <input type="file" id="logo-bestand" accept="image/svg+xml,image/png,image/jpeg,image/webp" hidden>
+      <button type="button" id="logo-wissel">Logo 1/1</button>
     </div>
 
     <h1 class="logo-boven">
@@ -278,39 +275,33 @@
   </script>
 
   <script>
-    // Logo testen: gekozen bestand vervangt het logo bovenaan en wordt onthouden in deze browser
+    // Logo testen: elke klik op de knop toont het volgende logo uit deze lijst.
+    // Nieuw logo? Zet het bestand in de map en voeg de naam hier toe.
+    const LOGOS = [
+      'logo-zwart.svg',
+      'logo2.svg',
+    ];
+
     (function () {
       const img = document.querySelector('.logo-boven img');
-      const origineel = img.getAttribute('src');
-      const kies = document.getElementById('logo-kies');
-      const reset = document.getElementById('logo-reset');
-      const bestand = document.getElementById('logo-bestand');
+      const knop = document.getElementById('logo-wissel');
       const sleutel = 'testlogo';
+      let nr = 0;
 
-      function toon(src) {
-        img.src = src || origineel;
-        reset.hidden = !src;
+      function toon(i) {
+        nr = (i + LOGOS.length) % LOGOS.length;
+        img.src = LOGOS[nr];
+        knop.textContent = 'Logo ' + (nr + 1) + '/' + LOGOS.length;
       }
 
-      try { toon(localStorage.getItem(sleutel)); } catch (e) {}
+      // laatst gekozen logo onthouden in deze browser
+      let opgeslagen = 0;
+      try { opgeslagen = Math.max(0, LOGOS.indexOf(localStorage.getItem(sleutel))); } catch (e) {}
+      toon(opgeslagen);
 
-      kies.addEventListener('click', () => bestand.click());
-
-      bestand.addEventListener('change', () => {
-        const f = bestand.files[0];
-        if (!f) return;
-        const lezer = new FileReader();
-        lezer.onload = () => {
-          toon(lezer.result);
-          try { localStorage.setItem(sleutel, lezer.result); } catch (e) {}
-        };
-        lezer.readAsDataURL(f);
-        bestand.value = '';
-      });
-
-      reset.addEventListener('click', () => {
-        toon(null);
-        try { localStorage.removeItem(sleutel); } catch (e) {}
+      knop.addEventListener('click', () => {
+        toon(nr + 1);
+        try { localStorage.setItem(sleutel, LOGOS[nr]); } catch (e) {}
       });
     })();
   </script>
