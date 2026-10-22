@@ -84,10 +84,39 @@
       top: clamp(24px, 5vh, 48px);
       left: 50%;
       transform: translateX(-50%);
-      width: min(30vw, 440px);
+      width: min(46vw, 700px);
       z-index: 2;
     }
     .logo-boven img { width: 100%; height: auto; display: block; }
+
+    /* ---------- VERSIE + LOGO TESTEN ---------- */
+    .versie,
+    .logo-knop {
+      position: absolute;
+      top: 12px;
+      z-index: 3;
+      font-size: 11px;
+      letter-spacing: .04em;
+      color: var(--wit);
+      text-shadow: 0 0 8px rgba(0,0,0,.35);
+    }
+    .versie { left: 16px; opacity: .7; }
+    .logo-knop {
+      right: 16px;
+      display: flex;
+      gap: 6px;
+    }
+    .logo-knop button {
+      font: inherit;
+      color: inherit;
+      background: rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.5);
+      border-radius: 999px;
+      padding: 5px 12px;
+      cursor: pointer;
+    }
+    .logo-knop button:hover { background: rgba(0,0,0,.6); }
+    .logo-knop [hidden] { display: none; }
 
     .tagline {
       position: absolute;
@@ -136,7 +165,7 @@
 
     /* Logo's iets groter op telefoon */
     @media (max-width: 700px) {
-      .logo-boven { width: 62vw; }
+      .logo-boven { width: 84vw; }
       .logo-onder { width: 55vw; }
       /* bijschrift rechtsonder, onder de tagline */
       .bijschrift { left: auto; right: 16px; bottom: 16px; text-align: right; }
@@ -172,6 +201,21 @@
       <img src="gm-versace.jpg" alt="Tentoonstelling Gianni Versace Retrospective in het Groninger Museum" loading="lazy">
       <figcaption class="bijschrift">Versace, Groninger Museum</figcaption>
     </figure>
+
+    <figure class="slide" data-zoom="in">
+      <img src="forum-tattoo.jpg" alt="Tentoonstelling Tattoo in Forum Groningen" loading="lazy">
+      <figcaption class="bijschrift">Tattoo, Forum Groningen</figcaption>
+    </figure>
+
+    <!-- Versienummer: bij elke update ophogen -->
+    <span class="versie">v1.0</span>
+
+    <!-- Logo testen: kies een SVG/PNG/JPG, die vervangt het logo bovenaan (alleen in je eigen browser) -->
+    <div class="logo-knop">
+      <button type="button" id="logo-kies">Logo wijzigen</button>
+      <button type="button" id="logo-reset" hidden>Origineel</button>
+      <input type="file" id="logo-bestand" accept="image/svg+xml,image/png,image/jpeg,image/webp" hidden>
+    </div>
 
     <h1 class="logo-boven">
       <img src="logo-zwart.svg" alt="Rudo + Jenny">
@@ -229,6 +273,44 @@
       document.addEventListener('visibilitychange', () => {
         clearInterval(timer);
         if (!document.hidden) timer = setInterval(volgende, interval);
+      });
+    })();
+  </script>
+
+  <script>
+    // Logo testen: gekozen bestand vervangt het logo bovenaan en wordt onthouden in deze browser
+    (function () {
+      const img = document.querySelector('.logo-boven img');
+      const origineel = img.getAttribute('src');
+      const kies = document.getElementById('logo-kies');
+      const reset = document.getElementById('logo-reset');
+      const bestand = document.getElementById('logo-bestand');
+      const sleutel = 'testlogo';
+
+      function toon(src) {
+        img.src = src || origineel;
+        reset.hidden = !src;
+      }
+
+      try { toon(localStorage.getItem(sleutel)); } catch (e) {}
+
+      kies.addEventListener('click', () => bestand.click());
+
+      bestand.addEventListener('change', () => {
+        const f = bestand.files[0];
+        if (!f) return;
+        const lezer = new FileReader();
+        lezer.onload = () => {
+          toon(lezer.result);
+          try { localStorage.setItem(sleutel, lezer.result); } catch (e) {}
+        };
+        lezer.readAsDataURL(f);
+        bestand.value = '';
+      });
+
+      reset.addEventListener('click', () => {
+        toon(null);
+        try { localStorage.removeItem(sleutel); } catch (e) {}
       });
     })();
   </script>
