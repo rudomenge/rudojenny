@@ -105,8 +105,14 @@
       content: "";
       position: absolute;
       inset: 0 0 auto 0;
-      height: clamp(240px, 48%, 460px);
-      background: linear-gradient(to bottom, #000 0%, #000 45%, rgba(0,0,0,0) 100%);
+      height: clamp(320px, 62%, 600px);
+      background: linear-gradient(to bottom,
+        rgba(0,0,0,.72) 0%,
+        rgba(0,0,0,.62) 20%,
+        rgba(0,0,0,.45) 40%,
+        rgba(0,0,0,.26) 60%,
+        rgba(0,0,0,.11) 80%,
+        rgba(0,0,0,0) 100%);
       pointer-events: none;
     }
 
@@ -230,7 +236,7 @@
     </figure>
 
     <!-- Versienummer: bij elke update ophogen -->
-    <span class="versie">v1.2</span>
+    <span class="versie">v1.3</span>
 
     <!-- Logo testen: de knop wisselt het logo bovenaan; de lijst met logo's staat onderaan in het script -->
     <div class="logo-knop">
@@ -308,6 +314,7 @@
     const LOGOS = [
       { zwart: 'logo-zwart.svg', wit: 'logo-wit.svg' },
       { zwart: 'logo2.svg' },
+      { zwart: 'logo3.svg' },
     ];
 
     (function () {
