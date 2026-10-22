@@ -15,7 +15,7 @@
     :root {
       --zwart: #000;
       --wit: #fff;
-      --fade: 1.6s;          /* duur van de overgang tussen foto's */
+      --fade: 2.8s;          /* duur van de overgang tussen foto's (ook aanpassen in het script) */
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,7 +39,7 @@
       overflow: hidden;
       background: #ccc;
       color: var(--zwart);   /* logo, menu en tagline: zwart op lichte foto's */
-      transition: color var(--fade) ease;
+      transition: color var(--fade) ease-in-out;
     }
     .hero.donker { color: var(--wit); }  /* ...en wit op donkere foto's (data-logo="wit") */
 
@@ -47,11 +47,12 @@
       position: absolute;
       inset: 0;
       opacity: 0;
-      transition: opacity var(--fade) ease;
+      transition: opacity var(--fade) ease-in-out;
     }
     .slide.actief { opacity: 1; }
 
-    .slide img {
+    .slide img,
+    .slide video {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -264,6 +265,9 @@
         data-band        -> zwarte band met fade aan de bovenkant
         data-band-onder  -> zwarte band met fade aan de onderkant
         data-logo="wit"  -> logo, menu, tagline en bijschrift in wit bij deze foto
+        data-duur="15000" -> deze slide blijft langer staan (in milliseconden)
+    - Video: zet een <video> in de slide in plaats van een <img>. Hij speelt (zonder geluid)
+      zolang de slide in beeld is en gaat de volgende keer verder waar hij was.
     - Het bijschrift staat in .bijschrift binnen de slide.
     Nieuwe foto toevoegen: kopieer een <figure class="slide"> en pas de gegevens aan.
   -->
@@ -271,6 +275,11 @@
 
     <figure class="slide actief" data-zoom="in">
       <img src="gm-jr.jpg" alt="Tentoonstelling JR: Chronicles in het Groninger Museum">
+      <figcaption class="bijschrift">JR, Groninger Museum</figcaption>
+    </figure>
+
+    <figure class="slide" data-band data-band-onder data-logo="wit" data-duur="15000">
+      <video src="gm-jr-video.mp4" poster="gm-jr-video.jpg" muted loop playsinline preload="metadata" aria-label="Video van de tentoonstelling JR in het Groninger Museum"></video>
       <figcaption class="bijschrift">JR, Groninger Museum</figcaption>
     </figure>
 
@@ -285,7 +294,7 @@
     </figure>
 
     <!-- Versienummer: bij elke update ophogen -->
-    <span class="versie">v2.1</span>
+    <span class="versie">v2.2</span>
 
     <!-- Kop: contact, logo (als code, zodat het kruisje kan draaien) en about -->
     <nav class="kop">
@@ -386,20 +395,32 @@
   </main>
 
   <script>
-    // Slideshow: foto's faden in elkaar over
+    // Slideshow: foto's en video's faden in elkaar over
     (function () {
       const hero = document.querySelector('.hero');
       const slides = Array.from(hero.querySelectorAll('.slide'));
       if (slides.length < 2) return;
 
       const interval = parseInt(hero.dataset.interval, 10) || 7000;
-      const fade = 1600;
+      const fade = 2800;   // gelijk aan --fade in de CSS
       // zoom loopt door tot de volgende foto helemaal is ingefade
       hero.style.setProperty('--duur', (interval + fade) + 'ms');
 
       let huidig = slides.findIndex(s => s.classList.contains('actief'));
       if (huidig < 0) { huidig = 0; slides[0].classList.add('actief'); }
       hero.classList.toggle('donker', slides[huidig].dataset.logo === 'wit');
+      const rustig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // video speelt alleen als zijn slide in beeld is
+      function speel(slide) {
+        const video = slide.querySelector('video');
+        if (video && !rustig) video.play().catch(() => {});
+      }
+      function stop(slide) {
+        const video = slide.querySelector('video');
+        if (video) setTimeout(() => { if (!slide.classList.contains('actief')) video.pause(); }, fade);
+      }
+      speel(slides[huidig]);
 
       function volgende() {
         const oud = slides[huidig];
@@ -408,9 +429,13 @@
 
         // zoom-animatie opnieuw starten
         const img = nieuw.querySelector('img');
-        img.style.animation = 'none';
-        void img.offsetWidth;
-        img.style.animation = '';
+        if (img) {
+          img.style.animation = 'none';
+          void img.offsetWidth;
+          img.style.animation = '';
+        }
+        speel(nieuw);
+        stop(oud);
 
         hero.classList.toggle('donker', nieuw.dataset.logo === 'wit');
 
@@ -420,12 +445,21 @@
         oud.classList.add('vorig');   // blijft doorzoomen tijdens het wegfaden
       }
 
-      let timer = setInterval(volgende, interval);
+      // elke slide blijft 'interval' staan, of langer met data-duur
+      let timer;
+      function plan() {
+        clearTimeout(timer);
+        const duur = parseInt(slides[huidig].dataset.duur, 10) || interval;
+        timer = setTimeout(() => { volgende(); plan(); }, duur);
+      }
+      plan();
 
       // pauzeren als het tabblad niet zichtbaar is
       document.addEventListener('visibilitychange', () => {
-        clearInterval(timer);
-        if (!document.hidden) timer = setInterval(volgende, interval);
+        clearTimeout(timer);
+        const video = slides[huidig].querySelector('video');
+        if (document.hidden) { if (video) video.pause(); }
+        else { speel(slides[huidig]); plan(); }
       });
     })();
 
