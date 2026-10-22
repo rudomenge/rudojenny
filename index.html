@@ -8,7 +8,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -100,6 +100,22 @@
     .hero.donker .logo-boven .zwart { opacity: 0; }
     .hero.donker .logo-boven .wit   { opacity: 1; }
 
+    /* Hoofdlogo (logo5) als code: kleur via currentColor, kruisje draait bij hover */
+    .logo5 { display: block; width: 100%; height: auto; }
+    .logo-boven .logo5 {
+      grid-area: 1 / 1;
+      color: var(--zwart);
+      transition: color var(--fade) ease;
+    }
+    .hero.donker .logo-boven .logo5 { color: var(--wit); }
+    .logo-boven.inline img,
+    .logo-boven:not(.inline) .logo5 { display: none; }
+    .logo5 .kruis {
+      transform-box: fill-box;
+      transform-origin: center;
+      cursor: pointer;
+    }
+
     /* Zwarte band met fade aan de bovenkant: zet data-band op een slide */
     .slide[data-band]::after {
       content: "";
@@ -107,11 +123,11 @@
       inset: 0 0 auto 0;
       height: clamp(320px, 62%, 600px);
       background: linear-gradient(to bottom,
-        rgba(0,0,0,.72) 0%,
-        rgba(0,0,0,.62) 20%,
-        rgba(0,0,0,.45) 40%,
-        rgba(0,0,0,.26) 60%,
-        rgba(0,0,0,.11) 80%,
+        rgba(0,0,0,.85) 0%,
+        rgba(0,0,0,.75) 20%,
+        rgba(0,0,0,.56) 40%,
+        rgba(0,0,0,.33) 60%,
+        rgba(0,0,0,.14) 80%,
         rgba(0,0,0,0) 100%);
       pointer-events: none;
     }
@@ -158,10 +174,11 @@
       transform: translateX(-50%);
       width: min(90vw, 900px);
       text-align: center;
-      font-weight: 200;
-      font-size: clamp(32px, 4.6vw, 68px);
-      line-height: 1.1;
-      letter-spacing: .01em;
+      font-family: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: clamp(30px, 4.2vw, 62px);
+      line-height: 1.05;
+      letter-spacing: -.01em;
       z-index: 2;
       text-shadow: 0 0 24px rgba(0,0,0,.18);
     }
@@ -182,10 +199,10 @@
 
     .logo-onder {
       display: block;
-      width: min(40vw, 300px);
+      width: min(50vw, 420px);
       margin: clamp(64px, 7vw, 100px) auto 0;
+      color: var(--wit);
     }
-    .logo-onder img { width: 100%; height: auto; display: block; }
 
     .mail {
       display: inline-block;
@@ -199,7 +216,7 @@
     /* Logo's iets groter op telefoon */
     @media (max-width: 700px) {
       .logo-boven { width: 84vw; top: 84px; }  /* ruimte voor de testknoppen */
-      .logo-onder { width: 55vw; }
+      .logo-onder { width: 70vw; }
       /* bijschrift rechtsonder, onder de tagline */
       .bijschrift { left: auto; right: 16px; bottom: 16px; text-align: right; }
     }
@@ -232,7 +249,7 @@
       <figcaption class="bijschrift">JR, Groninger Museum</figcaption>
     </figure>
 
-    <figure class="slide" data-zoom="uit">
+    <figure class="slide" data-zoom="uit" data-band data-logo="wit">
       <img src="gm-versace.jpg" alt="Tentoonstelling Gianni Versace Retrospective in het Groninger Museum" loading="lazy">
       <figcaption class="bijschrift">Versace, Groninger Museum</figcaption>
     </figure>
@@ -243,7 +260,7 @@
     </figure>
 
     <!-- Versienummer: bij elke update ophogen -->
-    <span class="versie">v1.6</span>
+    <span class="versie">v1.8</span>
 
     <!-- Testknoppen:
          - Logo: wisselt het logo bovenaan; de lijst met logo's staat onderaan in het script
@@ -253,7 +270,23 @@
       <button type="button" id="overgang-wissel">Slideshow 1/1</button>
     </div>
 
-    <h1 class="logo-boven">
+    <!-- Hoofdlogo (logo5) staat hier als code, zodat het kruisje kan draaien -->
+    <h1 class="logo-boven inline">
+      <svg class="logo5" viewBox="34 48 1002.5 167.5" role="img" aria-label="Rudo × Jenny" fill="currentColor">
+        <path d="M106.49,176.17l-18.53-30.31h-10.56v30.31h-42.77v-109.79h71.18c28.06,0,40,16.45,40,36.71,0,15.07-6.23,28.05-19.91,33.42l25.28,39.66h-44.68ZM77.4,118.85h15.07c8.31,0,10.39-4.33,10.39-9.35s-2.08-9.53-10.39-9.53h-15.07v18.88Z"/>
+        <path d="M153.34,78.84h40.35v42.77c0,12.99,1.73,23.03,10.22,23.03s10.22-10.04,10.22-23.03v-42.77h40.35v97.33h-38.1v-27.02h-3.29s-1.39,28.75-30.31,28.75c-20.78,0-29.44-14.89-29.44-50.57v-48.49Z"/>
+        <path d="M321.14,104.13h3.46l-1.73-55.94h40.35v127.98h-36.37v-28.05h-3.29c0,6.93-1.73,29.96-29.27,29.96s-33.08-22.69-33.08-50.57,6.58-50.39,30.83-50.39c22.51,0,29.09,19.4,29.09,27.02ZM322.87,127.51c0-10.39-1.39-18.88-9.87-18.88s-10.74,8.49-10.74,18.88,2.42,19.05,10.74,19.05,9.87-8.49,9.87-19.05Z"/>
+        <path d="M421.1,77.11c40.52,0,51.43,22.69,51.43,50.57s-10.91,50.39-51.43,50.39-51.43-22.51-51.43-50.39,10.91-50.57,51.43-50.57ZM431.31,127.68c0-10.56-1.73-19.05-10.22-19.05-7.1,0-10.22,5.72-10.22,19.05s3.12,18.88,10.22,18.88,10.22-5.72,10.22-18.88Z"/>
+        <g class="kruis">
+          <rect x="476" y="60" width="71" height="71" fill="transparent"/>
+          <path d="M541.39,119.33l-5.97,5.97-24.04-24.04-24.04,24.04-5.97-5.97,24.04-24.04-24.04-24.04,5.97-5.97,24.04,24.04,24.04-24.04,5.97,5.97-24.04,24.04,24.04,24.04Z"/>
+        </g>
+        <path d="M604.05,66.37v72.21c0,18.88-10.91,39.48-48.32,39.48-14.55,0-26.67-2.77-34.64-5.02v-36.37c6.93,3.12,16.8,6.93,23.9,6.93,10.22,0,16.28-2.42,16.28-14.37v-62.86h42.78Z"/>
+        <path d="M710.97,125.77l-59.75,6.06c.69,9.18,5.02,13.85,18.88,13.85,21.13,0,38.1-11.6,38.1-11.6v32.38s-16.28,11.6-46.76,11.6c-34.64,0-51.61-16.63-51.61-50.57s16.62-50.39,50.57-50.39,50.57,15.41,50.57,48.66ZM672.18,123.35c-.52-8.14-2.42-14.72-10.39-14.72-9.01,0-10.56,9.7-10.74,17.15l21.13-2.42Z"/>
+        <path d="M818.2,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
+        <path d="M927.3,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
+        <path d="M935.05,172.53c6.75,1.91,20.78,4.5,31.86,4.5,15.93,0,30.48-5.37,33.77-11.08h-54.2l-18.7-87.11h42.95l10.56,74.12,12.47-74.12h42.25l-23.03,98.54c-5.89,25.28-20.78,37.58-46.58,37.58-13.16,0-25.11-3.98-31.35-7.79v-34.64Z"/>
+      </svg>
       <img class="zwart" src="logo-zwart.svg" alt="Rudo + Jenny">
       <img class="wit" src="logo-wit.svg" alt="" aria-hidden="true">
     </h1>
@@ -267,7 +300,21 @@
     <p>Samen en afzonderlijk werkten we voor onder meer het Groninger Museum, Forum Groningen en andere culturele instellingen en opdrachtgevers.</p>
 
     <div class="logo-onder">
-      <img src="logo-wit.svg" alt="Rudo + Jenny">
+      <svg class="logo5" viewBox="34 48 1002.5 167.5" role="img" aria-label="Rudo × Jenny" fill="currentColor">
+        <path d="M106.49,176.17l-18.53-30.31h-10.56v30.31h-42.77v-109.79h71.18c28.06,0,40,16.45,40,36.71,0,15.07-6.23,28.05-19.91,33.42l25.28,39.66h-44.68ZM77.4,118.85h15.07c8.31,0,10.39-4.33,10.39-9.35s-2.08-9.53-10.39-9.53h-15.07v18.88Z"/>
+        <path d="M153.34,78.84h40.35v42.77c0,12.99,1.73,23.03,10.22,23.03s10.22-10.04,10.22-23.03v-42.77h40.35v97.33h-38.1v-27.02h-3.29s-1.39,28.75-30.31,28.75c-20.78,0-29.44-14.89-29.44-50.57v-48.49Z"/>
+        <path d="M321.14,104.13h3.46l-1.73-55.94h40.35v127.98h-36.37v-28.05h-3.29c0,6.93-1.73,29.96-29.27,29.96s-33.08-22.69-33.08-50.57,6.58-50.39,30.83-50.39c22.51,0,29.09,19.4,29.09,27.02ZM322.87,127.51c0-10.39-1.39-18.88-9.87-18.88s-10.74,8.49-10.74,18.88,2.42,19.05,10.74,19.05,9.87-8.49,9.87-19.05Z"/>
+        <path d="M421.1,77.11c40.52,0,51.43,22.69,51.43,50.57s-10.91,50.39-51.43,50.39-51.43-22.51-51.43-50.39,10.91-50.57,51.43-50.57ZM431.31,127.68c0-10.56-1.73-19.05-10.22-19.05-7.1,0-10.22,5.72-10.22,19.05s3.12,18.88,10.22,18.88,10.22-5.72,10.22-18.88Z"/>
+        <g class="kruis">
+          <rect x="476" y="60" width="71" height="71" fill="transparent"/>
+          <path d="M541.39,119.33l-5.97,5.97-24.04-24.04-24.04,24.04-5.97-5.97,24.04-24.04-24.04-24.04,5.97-5.97,24.04,24.04,24.04-24.04,5.97,5.97-24.04,24.04,24.04,24.04Z"/>
+        </g>
+        <path d="M604.05,66.37v72.21c0,18.88-10.91,39.48-48.32,39.48-14.55,0-26.67-2.77-34.64-5.02v-36.37c6.93,3.12,16.8,6.93,23.9,6.93,10.22,0,16.28-2.42,16.28-14.37v-62.86h42.78Z"/>
+        <path d="M710.97,125.77l-59.75,6.06c.69,9.18,5.02,13.85,18.88,13.85,21.13,0,38.1-11.6,38.1-11.6v32.38s-16.28,11.6-46.76,11.6c-34.64,0-51.61-16.63-51.61-50.57s16.62-50.39,50.57-50.39,50.57,15.41,50.57,48.66ZM672.18,123.35c-.52-8.14-2.42-14.72-10.39-14.72-9.01,0-10.56,9.7-10.74,17.15l21.13-2.42Z"/>
+        <path d="M818.2,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
+        <path d="M927.3,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
+        <path d="M935.05,172.53c6.75,1.91,20.78,4.5,31.86,4.5,15.93,0,30.48-5.37,33.77-11.08h-54.2l-18.7-87.11h42.95l10.56,74.12,12.47-74.12h42.25l-23.03,98.54c-5.89,25.28-20.78,37.58-46.58,37.58-13.16,0-25.11-3.98-31.35-7.79v-34.64Z"/>
+      </svg>
     </div>
 
     <a class="mail" href="mailto:info@rudojenny.nl">info@rudojenny.nl</a>
@@ -374,24 +421,28 @@
     // Logo testen: elke klik op de knop toont het volgende logo uit deze lijst.
     // Nieuw logo? Zet het bestand in de map en voeg het hier toe.
     // "wit" is de witte versie voor donkere foto's; zonder "wit" wordt het zwarte logo wit gemaakt.
+    // "inline" = het hoofdlogo dat als code in de pagina staat (met draaiend kruisje).
     const LOGOS = [
+      { zwart: 'logo5.svg', inline: true },
       { zwart: 'logo-zwart.svg', wit: 'logo-wit.svg' },
       { zwart: 'logo2.svg' },
       { zwart: 'logo3.svg' },
       { zwart: 'logo4.svg' },
-      { zwart: 'logo5.svg' },
     ];
 
     (function () {
       const zwart = document.querySelector('.logo-boven .zwart');
       const wit = document.querySelector('.logo-boven .wit');
+      const kop = document.querySelector('.logo-boven');
       const knop = document.getElementById('logo-wissel');
-      const sleutel = 'testlogo';
+      const sleutel = 'logo';
       let nr = 0;
 
       function toon(i) {
         nr = (i + LOGOS.length) % LOGOS.length;
         const logo = LOGOS[nr];
+        kop.classList.toggle('inline', !!logo.inline);
+        if (logo.inline) { knop.textContent = 'Logo ' + (nr + 1) + '/' + LOGOS.length; return; }
         zwart.src = logo.zwart;
         wit.src = logo.wit || logo.zwart;
         wit.classList.toggle('omkeren', !logo.wit);
@@ -411,6 +462,24 @@
         try { localStorage.setItem(sleutel, LOGOS[nr].zwart); } catch (e) {}
       });
     })();
+
+    // Kruisje in het logo draait zolang de muis erop staat en maakt de draai daarna netjes af
+    document.querySelectorAll('.logo5 .kruis').forEach(kruis => {
+      let draai = null;
+      kruis.addEventListener('mouseenter', () => {
+        if (draai) { draai.effect.updateTiming({ iterations: Infinity }); return; }
+        draai = kruis.animate(
+          [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
+          { duration: 900, iterations: Infinity, easing: 'linear' }
+        );
+      });
+      kruis.addEventListener('mouseleave', () => {
+        if (!draai) return;
+        const ronde = draai.effect.getComputedTiming().currentIteration || 0;
+        draai.effect.updateTiming({ iterations: ronde + 1 });
+        draai.finished.then(() => { draai = null; }).catch(() => {});
+      });
+    });
   </script>
 </body>
 </html>
