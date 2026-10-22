@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Rudo + Jenny — Tentoonstellingen vanuit inhoud en ontwerp</title>
+  <title>Rudo × Jenny — Tentoonstellingen vanuit inhoud en ontwerp</title>
   <meta name="description" content="Rudo Menge en Jenny Kloostra maken tentoonstellingen waarin vorm en inhoud samenkomen.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -19,7 +19,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html { -webkit-text-size-adjust: 100%; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 
     body {
       background: var(--zwart);
@@ -37,7 +37,11 @@
       min-height: 520px;
       overflow: hidden;
       background: #ccc;
+      color: var(--zwart);   /* logo, menu en tagline: zwart op lichte foto's */
+      transition: color var(--fade) ease;
+      will-change: transform;
     }
+    .hero.donker { color: var(--wit); }  /* ...en wit op donkere foto's (data-logo="wit") */
 
     .slide {
       position: absolute;
@@ -70,57 +74,17 @@
     @keyframes zoomIn  { from { transform: scale(1); }    to { transform: scale(1.12); } }
     @keyframes zoomUit { from { transform: scale(1.12); } to { transform: scale(1); } }
 
-    .bijschrift {
-      position: absolute;
-      left: clamp(16px, 4.2vw, 62px);
-      bottom: clamp(16px, 6.5vh, 60px);
-      font-size: clamp(12px, 1.1vw, 15px);
-      font-weight: 400;
-      text-shadow: 0 0 12px rgba(0,0,0,.25);
-    }
-
-    .logo-boven {
-      position: absolute;
-      top: clamp(24px, 5vh, 48px);
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(46vw, 700px);
-      z-index: 2;
-    }
-    .logo-boven { display: grid; }
-    .logo-boven img {
-      grid-area: 1 / 1;
-      width: 100%;
-      height: auto;
-      display: block;
-      transition: opacity var(--fade) ease;
-    }
-    .logo-boven .wit { opacity: 0; }
-    .logo-boven .wit.omkeren { filter: brightness(0) invert(1); }  /* logo zonder witte versie */
-    .hero.donker .logo-boven .zwart { opacity: 0; }
-    .hero.donker .logo-boven .wit   { opacity: 1; }
-
-    /* Hoofdlogo (logo5) als code: kleur via currentColor, kruisje draait bij hover */
-    .logo5 { display: block; width: 100%; height: auto; }
-    .logo-boven .logo5 {
-      grid-area: 1 / 1;
-      color: var(--zwart);
-      transition: color var(--fade) ease;
-    }
-    .hero.donker .logo-boven .logo5 { color: var(--wit); }
-    .logo-boven.inline img,
-    .logo-boven:not(.inline) .logo5 { display: none; }
-    .logo5 .kruis {
-      transform-box: fill-box;
-      transform-origin: center;
-      cursor: pointer;
-    }
-
     /* Zwarte band met fade aan de bovenkant: zet data-band op een slide */
-    .slide[data-band]::after {
+    .slide[data-band]::after,
+    .slide[data-band-onder]::before {
       content: "";
       position: absolute;
-      inset: 0 0 auto 0;
+      left: 0;
+      right: 0;
+      pointer-events: none;
+    }
+    .slide[data-band]::after {
+      top: 0;
       height: clamp(320px, 62%, 600px);
       background: linear-gradient(to bottom,
         rgba(0,0,0,.85) 0%,
@@ -129,62 +93,95 @@
         rgba(0,0,0,.33) 60%,
         rgba(0,0,0,.14) 80%,
         rgba(0,0,0,0) 100%);
-      pointer-events: none;
+    }
+    /* Zwarte band met fade aan de onderkant (achter de tagline): zet data-band-onder op een slide */
+    .slide[data-band-onder]::before {
+      bottom: 0;
+      height: clamp(260px, 50%, 480px);
+      z-index: 1;
+      background: linear-gradient(to top,
+        rgba(0,0,0,.8) 0%,
+        rgba(0,0,0,.68) 25%,
+        rgba(0,0,0,.42) 50%,
+        rgba(0,0,0,.16) 75%,
+        rgba(0,0,0,0) 100%);
     }
 
-    /* Schuif-overgangen: foto's liggen klaar, JS laat ze bewegen */
-    .hero:not([data-overgang="fade"]) .slide { transition: none; }
-    .hero:not([data-overgang="fade"]) .slide.vorig { opacity: 1; z-index: 1; }
-    .hero:not([data-overgang="fade"]) .slide.actief { z-index: 2; }
-
-    /* ---------- VERSIE + TESTKNOPPEN ---------- */
-    .versie,
-    .knoppen {
+    .bijschrift {
       position: absolute;
-      top: 12px;
-      z-index: 3;
-      font-size: 11px;
-      letter-spacing: .04em;
-      color: var(--wit);
-      text-shadow: 0 0 8px rgba(0,0,0,.35);
+      z-index: 2;
+      left: clamp(16px, 4.2vw, 62px);
+      bottom: clamp(16px, 6.5vh, 60px);
+      font-size: clamp(12px, 1.1vw, 15px);
+      font-weight: 400;
+      color: var(--zwart);
     }
-    .versie { left: 16px; opacity: .7; }
-    .knoppen {
-      right: 16px;
+    .slide[data-logo="wit"] .bijschrift { color: var(--wit); }
+
+    /* ---------- KOP: contact · logo · about ---------- */
+    .kop {
+      --L: min(60vw, 900px);   /* breedte van het logo; de menuwoorden schalen mee */
+      position: absolute;
+      top: clamp(24px, 5vh, 48px);
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 6px;
+      align-items: flex-start;
+      gap: calc(var(--L) * .035);
+      z-index: 2;
     }
-    .knoppen button {
-      font: inherit;
+    .kop h1 { width: var(--L); flex: none; }
+
+    .logo5 { display: block; width: 100%; height: auto; }
+    .logo5 .kruis {
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .menu {
+      display: block;
+      flex: none;
+      margin-top: calc(var(--L) * .0515);   /* midden van de woorden op het midden van de letters */
       color: inherit;
-      background: rgba(0,0,0,.35);
-      border: 1px solid rgba(255,255,255,.5);
-      border-radius: 999px;
-      padding: 5px 12px;
-      cursor: pointer;
+      transition: opacity .2s ease;
     }
-    .knoppen button:hover { background: rgba(0,0,0,.6); }
+    .menu:hover { opacity: .6; }
+    .menu svg { display: block; width: 100%; height: auto; }
+    .menu-contact { width: calc(var(--L) * .2166); }
+    .menu-about   { width: calc(var(--L) * .169); }
 
     .tagline {
       position: absolute;
       left: 50%;
       bottom: clamp(48px, 6vh, 64px);
       transform: translateX(-50%);
-      width: min(90vw, 900px);
+      width: min(92vw, 1100px);
       text-align: center;
       font-family: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
-      font-weight: 700;
-      font-size: clamp(30px, 4.2vw, 62px);
-      line-height: 1.05;
-      letter-spacing: -.01em;
+      font-weight: 800;
+      font-size: clamp(30px, 5vw, 80px);
+      line-height: 1;
+      letter-spacing: -.015em;
       z-index: 2;
-      text-shadow: 0 0 24px rgba(0,0,0,.18);
+    }
+
+    .versie {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      z-index: 3;
+      font-size: 11px;
+      letter-spacing: .04em;
+      opacity: .7;
     }
 
     /* ---------- TEKST ---------- */
     .intro {
+      position: relative;     /* schuift over de slideshow heen (parallax) */
+      z-index: 1;
+      background: var(--zwart);
+    }
+    .intro-tekst {
       max-width: 920px;
       margin: 0 auto;
       padding: clamp(64px, 11vw, 150px) 24px clamp(64px, 9vw, 130px);
@@ -213,9 +210,19 @@
     }
     .mail:hover { text-decoration: underline; text-underline-offset: .15em; }
 
-    /* Logo's iets groter op telefoon */
+    /* Telefoon: logo over de volle breedte, contact en about eronder */
     @media (max-width: 700px) {
-      .logo-boven { width: 84vw; top: 84px; }  /* ruimte voor de testknoppen */
+      .kop {
+        --L: 86vw;
+        width: var(--L);
+        flex-wrap: wrap;
+        justify-content: space-between;
+        row-gap: 14px;
+      }
+      .kop h1 { order: -1; flex-basis: 100%; }
+      .menu { margin-top: 0; }
+      .menu-contact { width: 24vw; }
+      .menu-about   { width: 18.7vw; }
       .logo-onder { width: 70vw; }
       /* bijschrift rechtsonder, onder de tagline */
       .bijschrift { left: auto; right: 16px; bottom: 16px; text-align: right; }
@@ -223,6 +230,7 @@
 
     /* Geen beweging voor wie dat heeft uitgezet */
     @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
       .slide img { animation: none !important; }
       .slide { transition-duration: .01s; }
     }
@@ -238,89 +246,109 @@
         data-zoom="uit"  -> langzaam uitzoomen
         (weglaten)       -> foto staat stil
         data-band        -> zwarte band met fade aan de bovenkant
-        data-logo="wit"  -> wit logo bij deze foto
+        data-band-onder  -> zwarte band met fade aan de onderkant
+        data-logo="wit"  -> logo, menu, tagline en bijschrift in wit bij deze foto
     - Het bijschrift staat in .bijschrift binnen de slide.
     Nieuwe foto toevoegen: kopieer een <figure class="slide"> en pas de gegevens aan.
   -->
-  <header class="hero" data-interval="7000" data-overgang="fade">
+  <header class="hero" data-interval="7000">
 
     <figure class="slide actief" data-zoom="in">
       <img src="gm-jr.jpg" alt="Tentoonstelling JR: Chronicles in het Groninger Museum">
       <figcaption class="bijschrift">JR, Groninger Museum</figcaption>
     </figure>
 
-    <figure class="slide" data-zoom="uit" data-band data-logo="wit">
+    <figure class="slide" data-zoom="uit" data-band data-band-onder data-logo="wit">
       <img src="gm-versace.jpg" alt="Tentoonstelling Gianni Versace Retrospective in het Groninger Museum" loading="lazy">
       <figcaption class="bijschrift">Versace, Groninger Museum</figcaption>
     </figure>
 
-    <figure class="slide" data-zoom="in" data-band data-logo="wit">
+    <figure class="slide" data-zoom="in" data-band data-band-onder data-logo="wit">
       <img src="forum-tattoo.jpg" alt="Tentoonstelling Tattoo in Forum Groningen" loading="lazy">
       <figcaption class="bijschrift">Tattoo, Forum Groningen</figcaption>
     </figure>
 
     <!-- Versienummer: bij elke update ophogen -->
-    <span class="versie">v1.8</span>
+    <span class="versie">v1.9</span>
 
-    <!-- Testknoppen:
-         - Logo: wisselt het logo bovenaan; de lijst met logo's staat onderaan in het script
-         - Slideshow: wisselt de overgang tussen de foto's en toont die meteen -->
-    <div class="knoppen">
-      <button type="button" id="logo-wissel">Logo 1/1</button>
-      <button type="button" id="overgang-wissel">Slideshow 1/1</button>
-    </div>
-
-    <!-- Hoofdlogo (logo5) staat hier als code, zodat het kruisje kan draaien -->
-    <h1 class="logo-boven inline">
-      <svg class="logo5" viewBox="34 48 1002.5 167.5" role="img" aria-label="Rudo × Jenny" fill="currentColor">
-        <path d="M106.49,176.17l-18.53-30.31h-10.56v30.31h-42.77v-109.79h71.18c28.06,0,40,16.45,40,36.71,0,15.07-6.23,28.05-19.91,33.42l25.28,39.66h-44.68ZM77.4,118.85h15.07c8.31,0,10.39-4.33,10.39-9.35s-2.08-9.53-10.39-9.53h-15.07v18.88Z"/>
-        <path d="M153.34,78.84h40.35v42.77c0,12.99,1.73,23.03,10.22,23.03s10.22-10.04,10.22-23.03v-42.77h40.35v97.33h-38.1v-27.02h-3.29s-1.39,28.75-30.31,28.75c-20.78,0-29.44-14.89-29.44-50.57v-48.49Z"/>
-        <path d="M321.14,104.13h3.46l-1.73-55.94h40.35v127.98h-36.37v-28.05h-3.29c0,6.93-1.73,29.96-29.27,29.96s-33.08-22.69-33.08-50.57,6.58-50.39,30.83-50.39c22.51,0,29.09,19.4,29.09,27.02ZM322.87,127.51c0-10.39-1.39-18.88-9.87-18.88s-10.74,8.49-10.74,18.88,2.42,19.05,10.74,19.05,9.87-8.49,9.87-19.05Z"/>
-        <path d="M421.1,77.11c40.52,0,51.43,22.69,51.43,50.57s-10.91,50.39-51.43,50.39-51.43-22.51-51.43-50.39,10.91-50.57,51.43-50.57ZM431.31,127.68c0-10.56-1.73-19.05-10.22-19.05-7.1,0-10.22,5.72-10.22,19.05s3.12,18.88,10.22,18.88,10.22-5.72,10.22-18.88Z"/>
-        <g class="kruis">
-          <rect x="476" y="60" width="71" height="71" fill="transparent"/>
-          <path d="M541.39,119.33l-5.97,5.97-24.04-24.04-24.04,24.04-5.97-5.97,24.04-24.04-24.04-24.04,5.97-5.97,24.04,24.04,24.04-24.04,5.97,5.97-24.04,24.04,24.04,24.04Z"/>
-        </g>
-        <path d="M604.05,66.37v72.21c0,18.88-10.91,39.48-48.32,39.48-14.55,0-26.67-2.77-34.64-5.02v-36.37c6.93,3.12,16.8,6.93,23.9,6.93,10.22,0,16.28-2.42,16.28-14.37v-62.86h42.78Z"/>
-        <path d="M710.97,125.77l-59.75,6.06c.69,9.18,5.02,13.85,18.88,13.85,21.13,0,38.1-11.6,38.1-11.6v32.38s-16.28,11.6-46.76,11.6c-34.64,0-51.61-16.63-51.61-50.57s16.62-50.39,50.57-50.39,50.57,15.41,50.57,48.66ZM672.18,123.35c-.52-8.14-2.42-14.72-10.39-14.72-9.01,0-10.56,9.7-10.74,17.15l21.13-2.42Z"/>
-        <path d="M818.2,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
-        <path d="M927.3,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
-        <path d="M935.05,172.53c6.75,1.91,20.78,4.5,31.86,4.5,15.93,0,30.48-5.37,33.77-11.08h-54.2l-18.7-87.11h42.95l10.56,74.12,12.47-74.12h42.25l-23.03,98.54c-5.89,25.28-20.78,37.58-46.58,37.58-13.16,0-25.11-3.98-31.35-7.79v-34.64Z"/>
-      </svg>
-      <img class="zwart" src="logo-zwart.svg" alt="Rudo + Jenny">
-      <img class="wit" src="logo-wit.svg" alt="" aria-hidden="true">
-    </h1>
+    <!-- Kop: contact, logo (als code, zodat het kruisje kan draaien) en about -->
+    <nav class="kop">
+      <a class="menu menu-contact" href="#contact" aria-label="Contact">
+        <svg viewBox="43 81.5 482.5 96.5" fill="currentColor" aria-hidden="true">
+          <path d="M102.97,130.83c-5.37-2.43-11.9-3.45-18.29-3.45-7.68,0-11.26,3.84-11.26,12.67,0,9.47,3.2,13.82,10.75,13.82,3.45,0,11.9-.9,18.81-6.52v25.97s-8.57,4.48-28.4,4.48-31.47-14.07-31.47-37.36,11.9-37.23,31.47-37.23c17.27,0,28.4,3.33,28.4,3.33v24.31Z"/>
+          <path d="M145.95,103.2c29.94,0,38,16.76,38,37.36s-8.06,37.23-38,37.23-37.99-16.63-37.99-37.23,8.06-37.36,37.99-37.36ZM153.5,140.55c0-7.8-1.28-14.07-7.55-14.07-5.24,0-7.55,4.22-7.55,14.07s2.3,13.94,7.55,13.94,7.55-4.22,7.55-13.94Z"/>
+          <path d="M263.65,176.37h-29.81v-31.6c0-11.9-2.3-17.01-7.55-17.01-6.27,0-7.55,7.42-7.55,17.01v31.6h-29.81v-71.9h28.14v19.96h2.43s1.02-21.24,20.98-21.24c14.84,0,23.16,11.64,23.16,32.24v40.94Z"/>
+          <path d="M300.88,104.73v-1.28c-13.3,0-24.18-9.59-24.18-21.62h28.66v22.9h15.99v24.05h-16.12v17.78c0,4.86,2.43,6.78,8.32,6.78,2.05,0,4.73-.77,7.8-1.66v21.88s-8.32,4.22-20.34,4.22c-19.32,0-25.71-7.29-25.71-29.68v-19.32h-7.55v-24.05h33.13Z"/>
+          <path d="M402.58,176.37h-28.27l1.28-20.85h-2.3c0,12.03-10.36,22.26-25.07,22.26-9.21,0-21.49-4.09-21.49-20.21,0-17.4,15.1-20.21,26.1-20.21h19.32c0-7.93-7.42-10.23-16.25-10.23-12.67,0-26.1,6.01-26.1,6.01v-24.05s13.56-6.01,34.54-6.01c27.76,0,38.25,10.23,38.25,37.23v36.08ZM372.64,141.83h-8.19c-4.48,0-9.47,1.02-9.47,7.55,0,6.14,4.22,7.68,9.08,7.68,5.76,0,8.44-4.61,8.57-15.22Z"/>
+          <path d="M467.18,130.83c-5.37-2.43-11.9-3.45-18.29-3.45-7.68,0-11.26,3.84-11.26,12.67,0,9.47,3.2,13.82,10.75,13.82,3.45,0,11.9-.9,18.81-6.52v25.97s-8.57,4.48-28.4,4.48-31.47-14.07-31.47-37.36,11.9-37.23,31.47-37.23c17.27,0,28.4,3.33,28.4,3.33v24.31Z"/>
+          <path d="M504.67,104.73v-1.28c-13.3,0-24.18-9.59-24.18-21.62h28.66v22.9h15.99v24.05h-16.12v17.78c0,4.86,2.43,6.78,8.32,6.78,2.05,0,4.73-.77,7.8-1.66v21.88s-8.32,4.22-20.34,4.22c-19.32,0-25.71-7.29-25.71-29.68v-19.32h-7.55v-24.05h33.13Z"/>
+        </svg>
+      </a>
+      <h1>
+        <svg class="logo5" viewBox="34 48 1002.5 167.5" role="img" aria-label="Rudo × Jenny" fill="currentColor">
+          <path d="M106.49,176.17l-18.53-30.31h-10.56v30.31h-42.77v-109.79h71.18c28.06,0,40,16.45,40,36.71,0,15.07-6.23,28.05-19.91,33.42l25.28,39.66h-44.68ZM77.4,118.85h15.07c8.31,0,10.39-4.33,10.39-9.35s-2.08-9.53-10.39-9.53h-15.07v18.88Z"/>
+          <path d="M153.34,78.84h40.35v42.77c0,12.99,1.73,23.03,10.22,23.03s10.22-10.04,10.22-23.03v-42.77h40.35v97.33h-38.1v-27.02h-3.29s-1.39,28.75-30.31,28.75c-20.78,0-29.44-14.89-29.44-50.57v-48.49Z"/>
+          <path d="M321.14,104.13h3.46l-1.73-55.94h40.35v127.98h-36.37v-28.05h-3.29c0,6.93-1.73,29.96-29.27,29.96s-33.08-22.69-33.08-50.57,6.58-50.39,30.83-50.39c22.51,0,29.09,19.4,29.09,27.02ZM322.87,127.51c0-10.39-1.39-18.88-9.87-18.88s-10.74,8.49-10.74,18.88,2.42,19.05,10.74,19.05,9.87-8.49,9.87-19.05Z"/>
+          <path d="M421.1,77.11c40.52,0,51.43,22.69,51.43,50.57s-10.91,50.39-51.43,50.39-51.43-22.51-51.43-50.39,10.91-50.57,51.43-50.57ZM431.31,127.68c0-10.56-1.73-19.05-10.22-19.05-7.1,0-10.22,5.72-10.22,19.05s3.12,18.88,10.22,18.88,10.22-5.72,10.22-18.88Z"/>
+          <g class="kruis">
+            <rect x="476" y="60" width="71" height="71" fill="transparent"/>
+            <path d="M541.39,119.33l-5.97,5.97-24.04-24.04-24.04,24.04-5.97-5.97,24.04-24.04-24.04-24.04,5.97-5.97,24.04,24.04,24.04-24.04,5.97,5.97-24.04,24.04,24.04,24.04Z"/>
+          </g>
+          <path d="M604.05,66.37v72.21c0,18.88-10.91,39.48-48.32,39.48-14.55,0-26.67-2.77-34.64-5.02v-36.37c6.93,3.12,16.8,6.93,23.9,6.93,10.22,0,16.28-2.42,16.28-14.37v-62.86h42.78Z"/>
+          <path d="M710.97,125.77l-59.75,6.06c.69,9.18,5.02,13.85,18.88,13.85,21.13,0,38.1-11.6,38.1-11.6v32.38s-16.28,11.6-46.76,11.6c-34.64,0-51.61-16.63-51.61-50.57s16.62-50.39,50.57-50.39,50.57,15.41,50.57,48.66ZM672.18,123.35c-.52-8.14-2.42-14.72-10.39-14.72-9.01,0-10.56,9.7-10.74,17.15l21.13-2.42Z"/>
+          <path d="M818.2,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
+          <path d="M927.3,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
+          <path d="M935.05,172.53c6.75,1.91,20.78,4.5,31.86,4.5,15.93,0,30.48-5.37,33.77-11.08h-54.2l-18.7-87.11h42.95l10.56,74.12,12.47-74.12h42.25l-23.03,98.54c-5.89,25.28-20.78,37.58-46.58,37.58-13.16,0-25.11-3.98-31.35-7.79v-34.64Z"/>
+        </svg>
+      </h1>
+      <a class="menu menu-about" href="#about" aria-label="About">
+        <svg viewBox="634 81.5 376.5 96.5" fill="currentColor" aria-hidden="true">
+          <path d="M710.02,176.37h-28.27l1.28-20.85h-2.3c0,12.03-10.36,22.26-25.07,22.26-9.21,0-21.49-4.09-21.49-20.21,0-17.4,15.1-20.21,26.1-20.21h19.32c0-7.93-7.42-10.23-16.25-10.23-12.67,0-26.1,6.01-26.1,6.01v-24.05s13.56-6.01,34.54-6.01c27.76,0,38.25,10.23,38.25,37.23v36.08ZM680.08,141.83h-8.19c-4.48,0-9.47,1.02-9.47,7.55,0,6.14,4.22,7.68,9.08,7.68,5.76,0,8.44-4.61,8.57-15.22Z"/>
+          <path d="M791.76,140.43c0,20.6-4.73,37.36-24.43,37.36s-21.62-17.01-21.62-22.13h-2.43v20.72h-26.87v-94.54h29.81l-1.28,41.32h2.56c0-5.63,4.86-19.96,21.49-19.96,17.91,0,22.77,16.63,22.77,37.23ZM761.44,140.43c0-7.68-1.79-13.94-7.93-13.94s-7.29,6.27-7.29,13.94,1.02,14.07,7.29,14.07,7.93-6.27,7.93-14.07Z"/>
+          <path d="M834.88,103.2c29.94,0,38,16.76,38,37.36s-8.06,37.23-38,37.23-38-16.63-38-37.23,8.06-37.36,38-37.36ZM842.42,140.55c0-7.8-1.28-14.07-7.55-14.07-5.25,0-7.55,4.22-7.55,14.07s2.3,13.94,7.55,13.94,7.55-4.22,7.55-13.94Z"/>
+          <path d="M877.6,104.48h29.81v31.6c0,9.59,1.28,17.01,7.55,17.01s7.55-7.42,7.55-17.01v-31.6h29.81v71.9h-28.14v-19.96h-2.43s-1.02,21.24-22.39,21.24c-15.35,0-21.75-11-21.75-37.36v-35.82Z"/>
+          <path d="M989.8,104.73v-1.28c-13.3,0-24.18-9.59-24.18-21.62h28.66v22.9h15.99v24.05h-16.12v17.78c0,4.86,2.43,6.78,8.32,6.78,2.05,0,4.73-.77,7.8-1.66v21.88s-8.32,4.22-20.34,4.22c-19.32,0-25.71-7.29-25.71-29.68v-19.32h-7.55v-24.05h33.13Z"/>
+        </svg>
+      </a>
+    </nav>
 
     <p class="tagline">Tentoonstellingen vanuit<br>inhoud en ontwerp</p>
   </header>
 
   <main class="intro">
-    <p>Rudo Menge en Jenny Kloostra maken tentoonstellingen waarin vorm en inhoud samenkomen. Jenny neemt haar ervaring in conceptvorming, projectcoördinatie en productiebegeleiding mee; Rudo is grafisch en ruimtelijk ontwerper. Als duo ontwikkelen we tentoonstellingen voor musea, van concept tot realisatie.</p>
+    <div class="intro-tekst">
+      <div id="about">
+        <p>Rudo Menge en Jenny Kloostra maken tentoonstellingen waarin vorm en inhoud samenkomen. Jenny neemt haar ervaring in conceptvorming, projectcoördinatie en productiebegeleiding mee; Rudo is grafisch en ruimtelijk ontwerper. Als duo ontwikkelen we tentoonstellingen voor musea, van concept tot realisatie.</p>
 
-    <p>Samen en afzonderlijk werkten we voor onder meer het Groninger Museum, Forum Groningen en andere culturele instellingen en opdrachtgevers.</p>
+        <p>Samen en afzonderlijk werkten we voor onder meer het Groninger Museum, Forum Groningen en andere culturele instellingen en opdrachtgevers.</p>
+      </div>
 
-    <div class="logo-onder">
-      <svg class="logo5" viewBox="34 48 1002.5 167.5" role="img" aria-label="Rudo × Jenny" fill="currentColor">
-        <path d="M106.49,176.17l-18.53-30.31h-10.56v30.31h-42.77v-109.79h71.18c28.06,0,40,16.45,40,36.71,0,15.07-6.23,28.05-19.91,33.42l25.28,39.66h-44.68ZM77.4,118.85h15.07c8.31,0,10.39-4.33,10.39-9.35s-2.08-9.53-10.39-9.53h-15.07v18.88Z"/>
-        <path d="M153.34,78.84h40.35v42.77c0,12.99,1.73,23.03,10.22,23.03s10.22-10.04,10.22-23.03v-42.77h40.35v97.33h-38.1v-27.02h-3.29s-1.39,28.75-30.31,28.75c-20.78,0-29.44-14.89-29.44-50.57v-48.49Z"/>
-        <path d="M321.14,104.13h3.46l-1.73-55.94h40.35v127.98h-36.37v-28.05h-3.29c0,6.93-1.73,29.96-29.27,29.96s-33.08-22.69-33.08-50.57,6.58-50.39,30.83-50.39c22.51,0,29.09,19.4,29.09,27.02ZM322.87,127.51c0-10.39-1.39-18.88-9.87-18.88s-10.74,8.49-10.74,18.88,2.42,19.05,10.74,19.05,9.87-8.49,9.87-19.05Z"/>
-        <path d="M421.1,77.11c40.52,0,51.43,22.69,51.43,50.57s-10.91,50.39-51.43,50.39-51.43-22.51-51.43-50.39,10.91-50.57,51.43-50.57ZM431.31,127.68c0-10.56-1.73-19.05-10.22-19.05-7.1,0-10.22,5.72-10.22,19.05s3.12,18.88,10.22,18.88,10.22-5.72,10.22-18.88Z"/>
-        <g class="kruis">
-          <rect x="476" y="60" width="71" height="71" fill="transparent"/>
-          <path d="M541.39,119.33l-5.97,5.97-24.04-24.04-24.04,24.04-5.97-5.97,24.04-24.04-24.04-24.04,5.97-5.97,24.04,24.04,24.04-24.04,5.97,5.97-24.04,24.04,24.04,24.04Z"/>
-        </g>
-        <path d="M604.05,66.37v72.21c0,18.88-10.91,39.48-48.32,39.48-14.55,0-26.67-2.77-34.64-5.02v-36.37c6.93,3.12,16.8,6.93,23.9,6.93,10.22,0,16.28-2.42,16.28-14.37v-62.86h42.78Z"/>
-        <path d="M710.97,125.77l-59.75,6.06c.69,9.18,5.02,13.85,18.88,13.85,21.13,0,38.1-11.6,38.1-11.6v32.38s-16.28,11.6-46.76,11.6c-34.64,0-51.61-16.63-51.61-50.57s16.62-50.39,50.57-50.39,50.57,15.41,50.57,48.66ZM672.18,123.35c-.52-8.14-2.42-14.72-10.39-14.72-9.01,0-10.56,9.7-10.74,17.15l21.13-2.42Z"/>
-        <path d="M818.2,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
-        <path d="M927.3,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
-        <path d="M935.05,172.53c6.75,1.91,20.78,4.5,31.86,4.5,15.93,0,30.48-5.37,33.77-11.08h-54.2l-18.7-87.11h42.95l10.56,74.12,12.47-74.12h42.25l-23.03,98.54c-5.89,25.28-20.78,37.58-46.58,37.58-13.16,0-25.11-3.98-31.35-7.79v-34.64Z"/>
-      </svg>
+      <div id="contact">
+        <div class="logo-onder">
+          <svg class="logo5" viewBox="34 48 1002.5 167.5" role="img" aria-label="Rudo × Jenny" fill="currentColor">
+            <path d="M106.49,176.17l-18.53-30.31h-10.56v30.31h-42.77v-109.79h71.18c28.06,0,40,16.45,40,36.71,0,15.07-6.23,28.05-19.91,33.42l25.28,39.66h-44.68ZM77.4,118.85h15.07c8.31,0,10.39-4.33,10.39-9.35s-2.08-9.53-10.39-9.53h-15.07v18.88Z"/>
+            <path d="M153.34,78.84h40.35v42.77c0,12.99,1.73,23.03,10.22,23.03s10.22-10.04,10.22-23.03v-42.77h40.35v97.33h-38.1v-27.02h-3.29s-1.39,28.75-30.31,28.75c-20.78,0-29.44-14.89-29.44-50.57v-48.49Z"/>
+            <path d="M321.14,104.13h3.46l-1.73-55.94h40.35v127.98h-36.37v-28.05h-3.29c0,6.93-1.73,29.96-29.27,29.96s-33.08-22.69-33.08-50.57,6.58-50.39,30.83-50.39c22.51,0,29.09,19.4,29.09,27.02ZM322.87,127.51c0-10.39-1.39-18.88-9.87-18.88s-10.74,8.49-10.74,18.88,2.42,19.05,10.74,19.05,9.87-8.49,9.87-19.05Z"/>
+            <path d="M421.1,77.11c40.52,0,51.43,22.69,51.43,50.57s-10.91,50.39-51.43,50.39-51.43-22.51-51.43-50.39,10.91-50.57,51.43-50.57ZM431.31,127.68c0-10.56-1.73-19.05-10.22-19.05-7.1,0-10.22,5.72-10.22,19.05s3.12,18.88,10.22,18.88,10.22-5.72,10.22-18.88Z"/>
+            <g class="kruis">
+              <rect x="476" y="60" width="71" height="71" fill="transparent"/>
+              <path d="M541.39,119.33l-5.97,5.97-24.04-24.04-24.04,24.04-5.97-5.97,24.04-24.04-24.04-24.04,5.97-5.97,24.04,24.04,24.04-24.04,5.97,5.97-24.04,24.04,24.04,24.04Z"/>
+            </g>
+            <path d="M604.05,66.37v72.21c0,18.88-10.91,39.48-48.32,39.48-14.55,0-26.67-2.77-34.64-5.02v-36.37c6.93,3.12,16.8,6.93,23.9,6.93,10.22,0,16.28-2.42,16.28-14.37v-62.86h42.78Z"/>
+            <path d="M710.97,125.77l-59.75,6.06c.69,9.18,5.02,13.85,18.88,13.85,21.13,0,38.1-11.6,38.1-11.6v32.38s-16.28,11.6-46.76,11.6c-34.64,0-51.61-16.63-51.61-50.57s16.62-50.39,50.57-50.39,50.57,15.41,50.57,48.66ZM672.18,123.35c-.52-8.14-2.42-14.72-10.39-14.72-9.01,0-10.56,9.7-10.74,17.15l21.13-2.42Z"/>
+            <path d="M818.2,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
+            <path d="M927.3,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
+            <path d="M935.05,172.53c6.75,1.91,20.78,4.5,31.86,4.5,15.93,0,30.48-5.37,33.77-11.08h-54.2l-18.7-87.11h42.95l10.56,74.12,12.47-74.12h42.25l-23.03,98.54c-5.89,25.28-20.78,37.58-46.58,37.58-13.16,0-25.11-3.98-31.35-7.79v-34.64Z"/>
+          </svg>
+        </div>
+
+        <a class="mail" href="mailto:info@rudojenny.nl">info@rudojenny.nl</a>
+      </div>
     </div>
-
-    <a class="mail" href="mailto:info@rudojenny.nl">info@rudojenny.nl</a>
   </main>
 
   <script>
+    // Slideshow: foto's faden in elkaar over
     (function () {
       const hero = document.querySelector('.hero');
       const slides = Array.from(hero.querySelectorAll('.slide'));
@@ -334,38 +362,6 @@
       let huidig = slides.findIndex(s => s.classList.contains('actief'));
       if (huidig < 0) { huidig = 0; slides[0].classList.add('actief'); }
       hero.classList.toggle('donker', slides[huidig].dataset.logo === 'wit');
-
-      // Overgangen tussen de foto's (knop "Slideshow" rechtsboven).
-      // Alle schuif-varianten bewegen van links naar rechts.
-      const OVERGANGEN = [
-        { id: 'fade',     naam: 'Fade' },
-        { id: 'over',     naam: 'Schuif over' },  // nieuwe foto schuift over de oude heen
-        { id: 'push',     naam: 'Wegduwen' },     // nieuwe foto duwt de oude weg
-        { id: 'parallax', naam: 'Parallax' },     // oude schuift langzaam mee en wordt donker
-        { id: 'onthul',   naam: 'Onthullen' },    // oude schuift weg, nieuwe ligt eronder
-      ];
-      const schuif = { duration: 1300, easing: 'cubic-bezier(.65, 0, .35, 1)' };
-      const rustig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      function beweeg(oud, nieuw) {
-        const soort = hero.dataset.overgang;
-        if (soort === 'fade' || rustig) return;
-        const links = 'translateX(-100%)', midden = 'translateX(0)', rechts = 'translateX(100%)';
-
-        if (soort === 'over') {
-          nieuw.animate({ transform: [links, midden] }, schuif);
-        } else if (soort === 'push') {
-          nieuw.animate({ transform: [links, midden] }, schuif);
-          oud.animate({ transform: [midden, rechts] }, schuif);
-        } else if (soort === 'parallax') {
-          nieuw.animate({ transform: [links, midden] }, schuif);
-          oud.animate({ transform: [midden, 'translateX(30%)'], filter: ['brightness(1)', 'brightness(.4)'] }, schuif);
-        } else if (soort === 'onthul') {
-          oud.style.zIndex = 3;   // oude foto ligt bovenop tot hij weg is
-          oud.animate({ transform: [midden, rechts] }, schuif)
-             .finished.then(() => { oud.style.zIndex = ''; });
-        }
-      }
 
       function volgende() {
         const oud = slides[huidig];
@@ -383,8 +379,7 @@
         slides.forEach(s => s.classList.remove('vorig'));
         nieuw.classList.add('actief');
         oud.classList.remove('actief');
-        oud.classList.add('vorig');   // blijft doorzoomen tijdens de overgang
-        beweeg(oud, nieuw);
+        oud.classList.add('vorig');   // blijft doorzoomen tijdens het wegfaden
       }
 
       let timer = setInterval(volgende, interval);
@@ -394,86 +389,36 @@
         clearInterval(timer);
         if (!document.hidden) timer = setInterval(volgende, interval);
       });
-
-      // Slideshow-knop: volgende overgang kiezen, onthouden en meteen laten zien
-      const knop = document.getElementById('overgang-wissel');
-      let nr = 0;
-      function kies(i) {
-        nr = (i + OVERGANGEN.length) % OVERGANGEN.length;
-        hero.dataset.overgang = OVERGANGEN[nr].id;
-        knop.textContent = 'Slideshow ' + (nr + 1) + '/' + OVERGANGEN.length + ': ' + OVERGANGEN[nr].naam;
-      }
-      try {
-        kies(Math.max(0, OVERGANGEN.findIndex(o => o.id === localStorage.getItem('overgang'))));
-      } catch (e) { kies(0); }
-
-      knop.addEventListener('click', () => {
-        kies(nr + 1);
-        try { localStorage.setItem('overgang', OVERGANGEN[nr].id); } catch (e) {}
-        clearInterval(timer);
-        volgende();
-        timer = setInterval(volgende, interval);
-      });
     })();
-  </script>
 
-  <script>
-    // Logo testen: elke klik op de knop toont het volgende logo uit deze lijst.
-    // Nieuw logo? Zet het bestand in de map en voeg het hier toe.
-    // "wit" is de witte versie voor donkere foto's; zonder "wit" wordt het zwarte logo wit gemaakt.
-    // "inline" = het hoofdlogo dat als code in de pagina staat (met draaiend kruisje).
-    const LOGOS = [
-      { zwart: 'logo5.svg', inline: true },
-      { zwart: 'logo-zwart.svg', wit: 'logo-wit.svg' },
-      { zwart: 'logo2.svg' },
-      { zwart: 'logo3.svg' },
-      { zwart: 'logo4.svg' },
-    ];
-
+    // Parallax: bij het scrollen beweegt de slideshow half zo snel, het zwarte vlak schuift eroverheen
     (function () {
-      const zwart = document.querySelector('.logo-boven .zwart');
-      const wit = document.querySelector('.logo-boven .wit');
-      const kop = document.querySelector('.logo-boven');
-      const knop = document.getElementById('logo-wissel');
-      const sleutel = 'logo';
-      let nr = 0;
-
-      function toon(i) {
-        nr = (i + LOGOS.length) % LOGOS.length;
-        const logo = LOGOS[nr];
-        kop.classList.toggle('inline', !!logo.inline);
-        if (logo.inline) { knop.textContent = 'Logo ' + (nr + 1) + '/' + LOGOS.length; return; }
-        zwart.src = logo.zwart;
-        wit.src = logo.wit || logo.zwart;
-        wit.classList.toggle('omkeren', !logo.wit);
-        knop.textContent = 'Logo ' + (nr + 1) + '/' + LOGOS.length;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const hero = document.querySelector('.hero');
+      let gepland = false;
+      function zet() {
+        gepland = false;
+        const y = Math.min(window.scrollY, hero.offsetHeight);
+        hero.style.transform = 'translate3d(0,' + (y * 0.5) + 'px,0)';
       }
-
-      // laatst gekozen logo onthouden in deze browser
-      let opgeslagen = 0;
-      try {
-        const naam = localStorage.getItem(sleutel);
-        opgeslagen = Math.max(0, LOGOS.findIndex(l => l.zwart === naam));
-      } catch (e) {}
-      toon(opgeslagen);
-
-      knop.addEventListener('click', () => {
-        toon(nr + 1);
-        try { localStorage.setItem(sleutel, LOGOS[nr].zwart); } catch (e) {}
-      });
+      window.addEventListener('scroll', () => {
+        if (!gepland) { gepland = true; requestAnimationFrame(zet); }
+      }, { passive: true });
+      zet();
     })();
 
-    // Kruisje in het logo draait zolang de muis erop staat en maakt de draai daarna netjes af
+    // Kruisje in het logo draait zolang de muis op het logo staat en maakt de draai daarna netjes af
     document.querySelectorAll('.logo5 .kruis').forEach(kruis => {
+      const logo = kruis.closest('.logo5');
       let draai = null;
-      kruis.addEventListener('mouseenter', () => {
+      logo.addEventListener('mouseenter', () => {
         if (draai) { draai.effect.updateTiming({ iterations: Infinity }); return; }
         draai = kruis.animate(
           [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
           { duration: 900, iterations: Infinity, easing: 'linear' }
         );
       });
-      kruis.addEventListener('mouseleave', () => {
+      logo.addEventListener('mouseleave', () => {
         if (!draai) return;
         const ronde = draai.effect.getComputedTiming().currentIteration || 0;
         draai.effect.updateTiming({ iterations: ronde + 1 });
