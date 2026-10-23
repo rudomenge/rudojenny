@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
-  <title>Rudo × Jenny — Tentoonstellingen vanuit inhoud en ontwerp</title>
+  <title>Rudo &amp; Jenny — Tentoonstellingen vanuit inhoud en ontwerp</title>
   <meta name="description" content="Rudo Menge en Jenny Kloostra maken tentoonstellingen waarin vorm en inhoud samenkomen.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -281,6 +281,12 @@
       line-height: 1.55;
     }
     .about-tekst p + p { margin-top: 1.2em; }
+    .about-tekst .about-motto {
+      font-family: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+      font-weight: 800;
+      font-size: clamp(20px, 1.9vw, 28px);
+      line-height: 1.2;
+    }
     .about-sluit {
       position: absolute;
       top: clamp(16px, 2.5vw, 32px);
@@ -381,7 +387,7 @@
     </figure>
 
     <!-- Versienummer: bij elke update ophogen -->
-    <span class="versie">v2.4</span>
+    <span class="versie">v2.5</span>
 
     <!-- Kop: contact, logo (als code, zodat het kruisje kan draaien) en about -->
     <nav class="kop">
@@ -398,7 +404,7 @@
       </a>
       <h1>
         <!-- breed logo (desktop) en gestapeld logo (telefoon) -->
-        <svg class="logo5 logo-breed" viewBox="34 48 1002.5 167.5" role="img" aria-label="Rudo × Jenny" fill="currentColor">
+        <svg class="logo5 logo-breed" viewBox="34 48 1002.5 167.5" role="img" aria-label="Rudo &amp; Jenny" fill="currentColor">
           <path d="M106.49,176.17l-18.53-30.31h-10.56v30.31h-42.77v-109.79h71.18c28.06,0,40,16.45,40,36.71,0,15.07-6.23,28.05-19.91,33.42l25.28,39.66h-44.68ZM77.4,118.85h15.07c8.31,0,10.39-4.33,10.39-9.35s-2.08-9.53-10.39-9.53h-15.07v18.88Z"/>
           <path d="M153.34,78.84h40.35v42.77c0,12.99,1.73,23.03,10.22,23.03s10.22-10.04,10.22-23.03v-42.77h40.35v97.33h-38.1v-27.02h-3.29s-1.39,28.75-30.31,28.75c-20.78,0-29.44-14.89-29.44-50.57v-48.49Z"/>
           <path d="M321.14,104.13h3.46l-1.73-55.94h40.35v127.98h-36.37v-28.05h-3.29c0,6.93-1.73,29.96-29.27,29.96s-33.08-22.69-33.08-50.57,6.58-50.39,30.83-50.39c22.51,0,29.09,19.4,29.09,27.02ZM322.87,127.51c0-10.39-1.39-18.88-9.87-18.88s-10.74,8.49-10.74,18.88,2.42,19.05,10.74,19.05,9.87-8.49,9.87-19.05Z"/>
@@ -413,7 +419,7 @@
           <path d="M927.3,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
           <path d="M935.05,172.53c6.75,1.91,20.78,4.5,31.86,4.5,15.93,0,30.48-5.37,33.77-11.08h-54.2l-18.7-87.11h42.95l10.56,74.12,12.47-74.12h42.25l-23.03,98.54c-5.89,25.28-20.78,37.58-46.58,37.58-13.16,0-25.11-3.98-31.35-7.79v-34.64Z"/>
         </svg>
-        <svg class="logo5 logo-stapel" viewBox="0 0 515 352.5" role="img" aria-label="Rudo × Jenny" fill="currentColor">
+        <svg class="logo5 logo-stapel" viewBox="0 0 515 352.5" role="img" aria-label="Rudo &amp; Jenny" fill="currentColor">
           <g transform="translate(3.9 -48.2)">
             <path d="M106.49,176.17l-18.53-30.31h-10.56v30.31h-42.77v-109.79h71.18c28.06,0,40,16.45,40,36.71,0,15.07-6.23,28.05-19.91,33.42l25.28,39.66h-44.68ZM77.4,118.85h15.07c8.31,0,10.39-4.33,10.39-9.35s-2.08-9.53-10.39-9.53h-15.07v18.88Z"/>
             <path d="M153.34,78.84h40.35v42.77c0,12.99,1.73,23.03,10.22,23.03s10.22-10.04,10.22-23.03v-42.77h40.35v97.33h-38.1v-27.02h-3.29s-1.39,28.75-30.31,28.75c-20.78,0-29.44-14.89-29.44-50.57v-48.49Z"/>
@@ -465,8 +471,9 @@
         </div>
         <div class="about-tekst schuif">
           <h2>Over ons</h2>
-          <p>Hier komt de tekst over Rudo en Jenny. [tekst volgt]</p>
-          <p>Tweede alinea, bijvoorbeeld over werkwijze, achtergrond of opdrachtgevers. [tekst volgt]</p>
+          <p>Rudo &amp; Jenny combineert ruimtelijk en grafisch ontwerp met inhoudelijke en organisatorische expertise. Jenny Kloostra is kunsthistoricus en coördineerde, produceerde en cureerde tentoonstellingen bij het Groninger Museum, het Fries Museum en Forum Groningen. Rudo Menge werkt als grafische en ruimtelijk ontwerper voor het Groninger Museum en diverse andere culturele instellingen, kunstenaars en architecten.</p>
+          <p>Met meer dan twintig jaar ervaring in het museale werkveld maken we samen tentoonstellingen waarin vorm en inhoud samenkomen. We werken mee aan de conceptontwikkeling, vertalen een concept naar een ruimtelijk en grafisch ontwerp en bieden projectmanagement en productiebegeleiding. We zijn betrokken vanaf de conceptfase tot de realisatie, of springen in waar onze expertise nodig is. Daarbij werken we samen met een netwerk van ervaren specialisten, van tekstschrijvers tot interieurbouwers.</p>
+          <p class="about-motto">Creatief in denken, praktisch in doen.</p>
         </div>
       </div>
     </div>
@@ -482,7 +489,7 @@
 
       <div id="contact">
         <div class="logo-onder inschuif">
-          <svg class="logo5" viewBox="34 48 1002.5 167.5" role="img" aria-label="Rudo × Jenny" fill="currentColor">
+          <svg class="logo5" viewBox="34 48 1002.5 167.5" role="img" aria-label="Rudo &amp; Jenny" fill="currentColor">
             <path d="M106.49,176.17l-18.53-30.31h-10.56v30.31h-42.77v-109.79h71.18c28.06,0,40,16.45,40,36.71,0,15.07-6.23,28.05-19.91,33.42l25.28,39.66h-44.68ZM77.4,118.85h15.07c8.31,0,10.39-4.33,10.39-9.35s-2.08-9.53-10.39-9.53h-15.07v18.88Z"/>
             <path d="M153.34,78.84h40.35v42.77c0,12.99,1.73,23.03,10.22,23.03s10.22-10.04,10.22-23.03v-42.77h40.35v97.33h-38.1v-27.02h-3.29s-1.39,28.75-30.31,28.75c-20.78,0-29.44-14.89-29.44-50.57v-48.49Z"/>
             <path d="M321.14,104.13h3.46l-1.73-55.94h40.35v127.98h-36.37v-28.05h-3.29c0,6.93-1.73,29.96-29.27,29.96s-33.08-22.69-33.08-50.57,6.58-50.39,30.83-50.39c22.51,0,29.09,19.4,29.09,27.02ZM322.87,127.51c0-10.39-1.39-18.88-9.87-18.88s-10.74,8.49-10.74,18.88,2.42,19.05,10.74,19.05,9.87-8.49,9.87-19.05Z"/>
