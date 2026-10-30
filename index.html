@@ -222,18 +222,40 @@
     }
     .mail:hover { text-decoration: underline; text-underline-offset: .15em; }
 
-    /* ---------- ABOUT-VLAK: klapt open onder de slideshow ---------- */
-    .about-vlak {
-      display: grid;
-      grid-template-rows: 1fr;
-      background: var(--zwart);
+    /* ---------- ABOUT- EN CONTACTPAGINA: liggen achter de slideshow ----------
+       Klik op "about": de voorpagina splitst als een gordijn, uit het midden naar links en rechts.
+       Klik op "contact": de voorpagina splitst naar boven en beneden.
+       (zonder JavaScript staan beide gewoon onder de slideshow) */
+    .vlak { background: var(--zwart); }
+    .js .vlak {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      visibility: hidden;
     }
-    .js .about-vlak {
-      grid-template-rows: 0fr;
-      transition: grid-template-rows 1.2s cubic-bezier(.6, 0, .2, 1);
+    .js .vlak.open { visibility: visible; }
+    html.vlak-open { overflow: hidden; }
+
+    /* het gordijn: twee kopieën van de voorpagina die elk een helft laten zien */
+    .gordijn {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      overflow: hidden;
     }
-    .js .about-vlak.open { grid-template-rows: 1fr; }
-    .about-binnen { overflow: hidden; }
+    .gordijn .hero {
+      position: absolute;
+      inset: 0;
+      will-change: transform;
+    }
+    .gordijn .helft-links  { clip-path: inset(0 50% 0 0); }
+    .gordijn .helft-rechts { clip-path: inset(0 0 0 50%); }
+    .gordijn .helft-boven  { clip-path: inset(0 0 50% 0); }
+    .gordijn .helft-onder  { clip-path: inset(50% 0 0 0); }
+
     .about-inhoud {
       position: relative;
       max-width: 1200px;
@@ -282,7 +304,8 @@
     }
     .about-tekst p + p { margin-top: 1.2em; }
     .about-sluit {
-      position: absolute;
+      position: fixed;
+      z-index: 1;
       top: clamp(16px, 2.5vw, 32px);
       right: clamp(16px, 4.2vw, 62px);
       background: none;
@@ -295,13 +318,25 @@
     .about-sluit:hover { opacity: 1; }
     .no-js .about-sluit { display: none; }
     /* foto en tekst schuiven van links naar binnen als het vlak opengaat */
-    .js .about-vlak .schuif {
+    .js .vlak .schuif {
       opacity: 0;
       transform: translateX(-120px);
       transition: opacity .9s ease, transform 1.1s cubic-bezier(.2, .7, .2, 1);
     }
-    .js .about-vlak.open .schuif { opacity: 1; transform: none; transition-delay: .5s; }
-    .js .about-vlak.open .schuif + .schuif { transition-delay: .75s; }
+    .js .vlak.open .schuif { opacity: 1; transform: none; transition-delay: .5s; }
+    .js .vlak.open .schuif + .schuif { transition-delay: .75s; }
+
+    /* contactpagina */
+    .contact-inhoud {
+      min-height: 100%;
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      text-align: center;
+      padding: clamp(80px, 10vw, 140px) clamp(16px, 4.2vw, 62px);
+    }
+    .contact-inhoud .logo-onder { width: min(70vw, 720px); margin: 0; }
+    .contact-inhoud .mail { font-size: clamp(20px, 2.4vw, 36px); }
 
     /* Telefoon: logo over de volle breedte, contact en about eronder */
     @media (max-width: 700px) {
@@ -335,8 +370,7 @@
       .slide img { animation: none !important; }
       .slide { transition-duration: .01s; }
       .js .inschuif,
-      .js .about-vlak .schuif { opacity: 1; transform: none; transition: none; }
-      .js .about-vlak { transition: none; }
+      .js .vlak .schuif { opacity: 1; transform: none; transition: none; }
     }
   </style>
 </head>
@@ -381,11 +415,11 @@
     </figure>
 
     <!-- Versienummer: bij elke update ophogen -->
-    <span class="versie">v2.4</span>
+    <span class="versie">v2.5</span>
 
     <!-- Kop: contact, logo (als code, zodat het kruisje kan draaien) en about -->
     <nav class="kop">
-      <a class="menu menu-contact" href="#contact" aria-label="Contact">
+      <a class="menu menu-contact" href="#contactpagina" aria-label="Contact">
         <svg viewBox="43 81.5 482.5 96.5" fill="currentColor" aria-hidden="true">
           <path d="M102.97,130.83c-5.37-2.43-11.9-3.45-18.29-3.45-7.68,0-11.26,3.84-11.26,12.67,0,9.47,3.2,13.82,10.75,13.82,3.45,0,11.9-.9,18.81-6.52v25.97s-8.57,4.48-28.4,4.48-31.47-14.07-31.47-37.36,11.9-37.23,31.47-37.23c17.27,0,28.4,3.33,28.4,3.33v24.31Z"/>
           <path d="M145.95,103.2c29.94,0,38,16.76,38,37.36s-8.06,37.23-38,37.23-37.99-16.63-37.99-37.23,8.06-37.36,37.99-37.36ZM153.5,140.55c0-7.8-1.28-14.07-7.55-14.07-5.24,0-7.55,4.22-7.55,14.07s2.3,13.94,7.55,13.94,7.55-4.22,7.55-13.94Z"/>
@@ -450,15 +484,15 @@
   </header>
 
   <!--
-    ABOUT-VLAK: gaat open als je op "about" klikt.
+    ABOUT-PAGINA: ligt achter de voorpagina; die splitst naar links en rechts als je op "about" klikt.
     - Foto's: klik op de foto om door de lijst in data-fotos te bladeren (om te kiezen welke het best werkt).
       Staande foto's werken het mooist (ongeveer 4:5); andere formaten worden bijgesneden.
     - Tekst: vervang de kop en de alinea's hieronder.
   -->
-  <section class="about-vlak" id="over-ons" aria-label="Over ons">
+  <section class="vlak about-vlak" id="over-ons" aria-label="Over ons" data-split="horizontaal">
+    <button class="about-sluit" type="button" aria-label="Sluiten">×</button>
     <div class="about-binnen">
       <div class="about-inhoud">
-        <button class="about-sluit" type="button" aria-label="Sluiten">×</button>
         <div class="about-foto schuif" data-fotos="portret1.jpg portret2.jpg portret3.jpg portret4.jpg portret5.jpg">
           <img src="portret1.jpg" alt="Rudo Menge en Jenny Kloostra">
           <span class="foto-teller">1/5</span>
@@ -469,6 +503,31 @@
           <p>Tweede alinea, bijvoorbeeld over werkwijze, achtergrond of opdrachtgevers. [tekst volgt]</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- CONTACT-PAGINA: ligt achter de voorpagina; die splitst naar boven en beneden als je op "contact" klikt. -->
+  <section class="vlak contact-vlak" id="contactpagina" aria-label="Contact" data-split="verticaal">
+    <button class="about-sluit" type="button" aria-label="Sluiten">×</button>
+    <div class="contact-inhoud">
+      <div class="logo-onder schuif">
+        <svg class="logo5" viewBox="34 48 1002.5 167.5" role="img" aria-label="Rudo × Jenny" fill="currentColor">
+        <path d="M106.49,176.17l-18.53-30.31h-10.56v30.31h-42.77v-109.79h71.18c28.06,0,40,16.45,40,36.71,0,15.07-6.23,28.05-19.91,33.42l25.28,39.66h-44.68ZM77.4,118.85h15.07c8.31,0,10.39-4.33,10.39-9.35s-2.08-9.53-10.39-9.53h-15.07v18.88Z"/>
+        <path d="M153.34,78.84h40.35v42.77c0,12.99,1.73,23.03,10.22,23.03s10.22-10.04,10.22-23.03v-42.77h40.35v97.33h-38.1v-27.02h-3.29s-1.39,28.75-30.31,28.75c-20.78,0-29.44-14.89-29.44-50.57v-48.49Z"/>
+        <path d="M321.14,104.13h3.46l-1.73-55.94h40.35v127.98h-36.37v-28.05h-3.29c0,6.93-1.73,29.96-29.27,29.96s-33.08-22.69-33.08-50.57,6.58-50.39,30.83-50.39c22.51,0,29.09,19.4,29.09,27.02ZM322.87,127.51c0-10.39-1.39-18.88-9.87-18.88s-10.74,8.49-10.74,18.88,2.42,19.05,10.74,19.05,9.87-8.49,9.87-19.05Z"/>
+        <path d="M421.1,77.11c40.52,0,51.43,22.69,51.43,50.57s-10.91,50.39-51.43,50.39-51.43-22.51-51.43-50.39,10.91-50.57,51.43-50.57ZM431.31,127.68c0-10.56-1.73-19.05-10.22-19.05-7.1,0-10.22,5.72-10.22,19.05s3.12,18.88,10.22,18.88,10.22-5.72,10.22-18.88Z"/>
+        <g class="kruis">
+          <rect x="476" y="60" width="71" height="71" fill="transparent"/>
+          <path d="M541.39,119.33l-5.97,5.97-24.04-24.04-24.04,24.04-5.97-5.97,24.04-24.04-24.04-24.04,5.97-5.97,24.04,24.04,24.04-24.04,5.97,5.97-24.04,24.04,24.04,24.04Z"/>
+        </g>
+        <path d="M604.05,66.37v72.21c0,18.88-10.91,39.48-48.32,39.48-14.55,0-26.67-2.77-34.64-5.02v-36.37c6.93,3.12,16.8,6.93,23.9,6.93,10.22,0,16.28-2.42,16.28-14.37v-62.86h42.78Z"/>
+        <path d="M710.97,125.77l-59.75,6.06c.69,9.18,5.02,13.85,18.88,13.85,21.13,0,38.1-11.6,38.1-11.6v32.38s-16.28,11.6-46.76,11.6c-34.64,0-51.61-16.63-51.61-50.57s16.62-50.39,50.57-50.39,50.57,15.41,50.57,48.66ZM672.18,123.35c-.52-8.14-2.42-14.72-10.39-14.72-9.01,0-10.56,9.7-10.74,17.15l21.13-2.42Z"/>
+        <path d="M818.2,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
+        <path d="M927.3,176.17h-40.35v-42.78c0-16.1-3.12-23.03-10.22-23.03-8.49,0-10.22,10.04-10.22,23.03v42.78h-40.35v-97.33h38.1v27.02h3.29s1.39-28.75,28.4-28.75c20.09,0,31.35,15.76,31.35,43.64v55.42Z"/>
+        <path d="M935.05,172.53c6.75,1.91,20.78,4.5,31.86,4.5,15.93,0,30.48-5.37,33.77-11.08h-54.2l-18.7-87.11h42.95l10.56,74.12,12.47-74.12h42.25l-23.03,98.54c-5.89,25.28-20.78,37.58-46.58,37.58-13.16,0-25.11-3.98-31.35-7.79v-34.64Z"/>
+          </svg>
+      </div>
+      <a class="mail schuif" href="mailto:info@rudojenny.nl">info@rudojenny.nl</a>
     </div>
   </section>
 
@@ -604,22 +663,97 @@
       blokken.forEach(b => kijker.observe(b));
     })();
 
-    // About-vlak openen (klik op "about") en sluiten (×)
+    // About en contact: de voorpagina splitst open als een gordijn, met daarachter de pagina.
+    // data-split="horizontaal" -> naar links en rechts, "verticaal" -> naar boven en beneden.
     (function () {
-      const vlak = document.getElementById('over-ons');
-      const sluit = vlak.querySelector('.about-sluit');
-      document.querySelectorAll('a[href="#over-ons"]').forEach(link => {
-        link.addEventListener('click', e => {
-          e.preventDefault();
-          vlak.classList.add('open');
-          // scrollen zodra het vlak een beetje open is
-          setTimeout(() => vlak.scrollIntoView({ behavior: 'smooth' }), 150);
+      const hero = document.querySelector('.hero');
+      const rustig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const duur = 1300;
+      const easing = 'cubic-bezier(.7, 0, .2, 1)';
+      let bezig = false;
+      let openVlak = null;
+
+      // twee kopieën van de voorpagina zoals hij nu in beeld is, elk met één helft zichtbaar
+      function maakGordijn(richting) {
+        const gordijn = document.createElement('div');
+        gordijn.className = 'gordijn';
+        gordijn.setAttribute('aria-hidden', 'true');
+        const namen = richting === 'verticaal' ? ['helft-boven', 'helft-onder'] : ['helft-links', 'helft-rechts'];
+        const origineel = Array.from(hero.querySelectorAll('img, video'));
+        const helften = namen.map(naam => {
+          const kopie = hero.cloneNode(true);
+          kopie.classList.add(naam);
+          kopie.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+          // zoom en video precies laten staan zoals ze nu zijn
+          kopie.querySelectorAll('img, video').forEach((el, n) => {
+            const bron = origineel[n];
+            el.style.animation = 'none';
+            el.style.transform = getComputedStyle(bron).transform;
+            if (el.tagName === 'VIDEO') {
+              el.muted = true;
+              el.removeAttribute('preload');
+              el.addEventListener('loadedmetadata', () => { el.currentTime = bron.currentTime; }, { once: true });
+            }
+          });
+          gordijn.appendChild(kopie);
+          return kopie;
         });
+        document.body.appendChild(gordijn);
+        return { gordijn, helften };
+      }
+
+      function weg(richting) {
+        return richting === 'verticaal'
+          ? ['translateY(-50%)', 'translateY(50%)']
+          : ['translateX(-50%)', 'translateX(50%)'];
+      }
+
+      function open(vlak) {
+        if (bezig || openVlak) return;
+        const richting = vlak.dataset.split;
+        window.scrollTo(0, 0);
+        vlak.scrollTop = 0;
+        const { gordijn, helften } = maakGordijn(richting);
+        vlak.classList.add('open');
+        document.documentElement.classList.add('vlak-open');
+        openVlak = vlak;
+        if (rustig) { gordijn.remove(); return; }
+        bezig = true;
+        const doel = weg(richting);
+        const animaties = helften.map((h, n) => h.animate(
+          [{ transform: 'none' }, { transform: doel[n] }],
+          { duration: duur, easing, fill: 'forwards' }
+        ));
+        animaties[0].finished.then(() => { gordijn.remove(); bezig = false; });
+      }
+
+      function sluit() {
+        if (bezig || !openVlak) return;
+        const vlak = openVlak;
+        openVlak = null;
+        const klaar = () => {
+          vlak.classList.remove('open');
+          document.documentElement.classList.remove('vlak-open');
+        };
+        if (rustig) { klaar(); return; }
+        bezig = true;
+        const richting = vlak.dataset.split;
+        const { gordijn, helften } = maakGordijn(richting);
+        const van = weg(richting);
+        const animaties = helften.map((h, n) => h.animate(
+          [{ transform: van[n] }, { transform: 'none' }],
+          { duration: duur, easing, fill: 'forwards' }
+        ));
+        animaties[0].finished.then(() => { klaar(); gordijn.remove(); bezig = false; });
+      }
+
+      document.querySelectorAll('.vlak[data-split]').forEach(vlak => {
+        document.querySelectorAll('a[href="#' + vlak.id + '"]').forEach(link => {
+          link.addEventListener('click', e => { e.preventDefault(); open(vlak); });
+        });
+        vlak.querySelector('.about-sluit').addEventListener('click', sluit);
       });
-      sluit.addEventListener('click', () => {
-        vlak.classList.remove('open');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') sluit(); });
     })();
 
     // About-foto: elke klik toont de volgende foto uit data-fotos
